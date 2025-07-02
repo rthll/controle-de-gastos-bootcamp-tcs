@@ -26,6 +26,12 @@ public class UsuarioService implements UserDetailsService {
                 .build();
     }
 
+    public Usuario searchUser(String email) throws UsernameNotFoundException {
+        // Retorna o objeto usuario pesquisado com o email
+        return usuarioRepository.findByEmail(email)
+                .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado com email: " + email));
+    }
+
     public Optional<Usuario> buscarPorEmail(String email) {
         return usuarioRepository.findByEmail(email);
     }
