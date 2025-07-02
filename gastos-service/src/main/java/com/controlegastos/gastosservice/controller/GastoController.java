@@ -31,7 +31,7 @@ public class GastoController {
     @GetMapping
     public ResponseEntity<List<GastoResponseDTO>> listarGastos() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String usuarioEmail = authentication.getName(); // pega o email do token
+        String usuarioEmail = authentication.getName();
 
         List<GastoResponseDTO> lista = gastoService.listarPorUsuario(usuarioEmail);
         return ResponseEntity.ok(lista);
