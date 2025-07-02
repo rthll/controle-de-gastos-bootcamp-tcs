@@ -18,14 +18,14 @@ public class GastoService {
     private final GastoRepository gastoRepository;
     private final ParcelaRepository parcelaRepository;
 
-    public GastoResponseDTO criarGasto(String usuarioId, GastoRequestDTO dto) {
+    public GastoResponseDTO criarGasto(String usuarioEmail, GastoRequestDTO dto) {
         Gasto gasto = Gasto.builder()
                 .descricao(dto.getDescricao())
                 .valorTotal(dto.getValorTotal())
                 .data(dto.getData())
                 .parcelado(dto.isParcelado())
                 .numeroParcelas(dto.getNumeroParcelas())
-                .usuarioId(usuarioId)
+                .usuarioId(usuarioEmail)
                 .build();
 
         // Se for parcelado, cria parcelas

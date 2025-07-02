@@ -5,6 +5,8 @@ import com.controlegastos.gastosservice.dto.GastoResponseDTO;
 import com.controlegastos.gastosservice.service.GastoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,22 +18,22 @@ public class GastoController {
 
     private final GastoService gastoService;
 
-    // 🟢 POST /gastos
     @PostMapping
-    public ResponseEntity<GastoResponseDTO> criarGasto(
-            @RequestHeader("usuario-id") String usuarioId,
-            @RequestBody GastoRequestDTO dto) {
+    public ResponseEntity<GastoResponseDTO> criarGasto(@RequestBody GastoRequestDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
 
-        GastoResponseDTO response = gastoService.criarGasto(usuarioId, dto);
+        GastoResponseDTO response = gastoService.criarGasto(usuarioEmail, dto);
         return ResponseEntity.ok(response);
     }
 
-    // 🔵 GET /gastos
-    @GetMapping
-    public ResponseEntity<List<GastoResponseDTO>> listarGastos(
-            @RequestHeader("usuario-id") String usuarioId) {
 
-        List<GastoResponseDTO> lista = gastoService.listarPorUsuario(usuarioId);
+    @GetMapping
+    public ResponseEntity<List<GastoResponseDTO>> listarGastos() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName(); // pega o email do token
+
+        List<GastoResponseDTO> lista = gastoService.listarPorUsuario(usuarioEmail);
         return ResponseEntity.ok(lista);
     }
 }
