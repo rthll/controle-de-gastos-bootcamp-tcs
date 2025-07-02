@@ -52,8 +52,8 @@ public class GastoService {
         return mapToResponseDTO(salvo);
     }
 
-    public List<GastoResponseDTO> listarPorUsuario(String usuarioId) {
-        return gastoRepository.findByUsuarioId(usuarioId)
+    public List<GastoResponseDTO> listarPorUsuario(String usuarioEmail) {
+        return gastoRepository.findByUsuarioId(usuarioEmail)
                 .stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
