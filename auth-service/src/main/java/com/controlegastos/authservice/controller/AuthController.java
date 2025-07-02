@@ -48,8 +48,10 @@ public class AuthController {
         );
 
         UserDetails user = usuarioService.loadUserByUsername(request.getEmail());
+        Usuario usuario = usuarioService.searchUser(request.getEmail());
+        String nome = usuario.getNome();
         String token = jwtService.generateToken(user.getUsername());
 
-        return ResponseEntity.ok(AuthResponse.builder().token(token).build());
+        return ResponseEntity.ok(AuthResponse.builder().token(token).nome(nome).build());
     }
 }
