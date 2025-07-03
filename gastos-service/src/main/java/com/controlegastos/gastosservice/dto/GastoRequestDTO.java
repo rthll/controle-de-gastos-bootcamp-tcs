@@ -20,4 +20,8 @@ public class GastoRequestDTO {
     private boolean parcelado;
 
     private Integer numeroParcelas;
+
+    private String fonte;
+
+    private String categoria;
 }

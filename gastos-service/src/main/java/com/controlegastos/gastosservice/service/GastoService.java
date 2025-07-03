@@ -5,9 +5,7 @@ import com.controlegastos.gastosservice.entity.*;
 import com.controlegastos.gastosservice.repository.*;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -26,6 +24,8 @@ public class GastoService {
                 .parcelado(dto.isParcelado())
                 .numeroParcelas(dto.getNumeroParcelas())
                 .usuarioId(usuarioEmail)
+                .fonte(dto.getFonte())
+                .categoria(dto.getCategoria())
                 .build();
 
         // Se for parcelado, cria parcelas
@@ -79,6 +79,8 @@ public class GastoService {
                 .numeroParcelas(gasto.getNumeroParcelas())
                 .usuarioId(gasto.getUsuarioId())
                 .parcelas(parcelas)
+                .fonte(gasto.getFonte())
+                .categoria(gasto.getCategoria())
                 .build();
     }
 }

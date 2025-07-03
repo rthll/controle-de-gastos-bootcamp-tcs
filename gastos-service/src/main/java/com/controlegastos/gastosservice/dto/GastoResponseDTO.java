@@ -14,11 +14,23 @@ import java.util.UUID;
 public class GastoResponseDTO {
 
     private UUID id;
+
     private String descricao;
+
     private BigDecimal valorTotal;
+
     private LocalDate data;
+
     private boolean parcelado;
+
     private Integer numeroParcelas;
+
     private String usuarioId;
+
+    private String fonte;
+
+    private String categoria;
+
     private List<ParcelaDTO> parcelas;
+
 }

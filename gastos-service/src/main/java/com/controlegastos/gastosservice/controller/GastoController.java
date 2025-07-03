@@ -21,6 +21,7 @@ public class GastoController {
     @PostMapping
     public ResponseEntity<GastoResponseDTO> criarGasto(@RequestBody GastoRequestDTO dto) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println(authentication);
         String usuarioEmail = authentication.getName();
 
         GastoResponseDTO response = gastoService.criarGasto(usuarioEmail, dto);

@@ -27,8 +27,10 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         final String authHeader = request.getHeader("Authorization");
 
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
-            filterChain.doFilter(request, response);
-            return;
+            // ❌ NÃO continue - responda com erro 401
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\":\"Token JWT obrigatório\"}");
+            return; // ← Para aqui, não continua
         }
 
         String token = authHeader.substring(7);
@@ -44,8 +46,13 @@ public class JwtAuthFilter extends OncePerRequestFilter {
             );
 
             SecurityContextHolder.getContext().setAuthentication(authToken);
+            filterChain.doFilter(request, response);
+        } else {
+            // Token inválido - retorna 401
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+            response.getWriter().write("{\"error\":\"Token JWT inválido\"}");
+            return;
         }
-
-        filterChain.doFilter(request, response);
     }
+
 }

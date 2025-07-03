@@ -32,6 +32,10 @@ public class Gasto {
 
     private String usuarioId;
 
+    private String fonte;
+
+    private String categoria;
+
     @OneToMany(mappedBy = "gasto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Parcela> parcelas;
 }
