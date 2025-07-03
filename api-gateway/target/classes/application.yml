@@ -8,12 +8,12 @@ spring:
   cloud:
     gateway:
       routes:
-        - id: auth-service
+        - id: login-auth-api
           uri: http://localhost:8081
           predicates:
             - Path=/auth/**
 
-        - id: gastos-service-gastos
+        - id: gastos-services
           uri: http://localhost:8082
           predicates:
             - Path=/gastos/**
