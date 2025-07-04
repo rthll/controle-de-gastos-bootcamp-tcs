@@ -29,7 +29,7 @@ public class CompraInvestimentoController {
         return service.atualizar(id, compra);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deletar/{id}")
     public void deletar(@PathVariable UUID id) {
         service.deletar(id);
     }

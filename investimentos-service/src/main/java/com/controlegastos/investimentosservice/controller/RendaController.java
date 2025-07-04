@@ -34,7 +34,7 @@ public class RendaController {
     }
 
     //Deletar
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deletar/{id}")
     public void deletar(@PathVariable UUID id) {
         service.deletar(id);
     }

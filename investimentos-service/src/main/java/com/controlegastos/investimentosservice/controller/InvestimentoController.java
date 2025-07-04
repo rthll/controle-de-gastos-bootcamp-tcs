@@ -34,7 +34,7 @@ public class InvestimentoController {
         return service.atualizar(id, investimento);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/deletar/{id}")
     public void deletar(@PathVariable UUID id) {
         service.deletar(id);
     }
