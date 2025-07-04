@@ -18,13 +18,23 @@ public class InvestimentoService {
         return repository.findAll();
     }
 
+    public List<Investimento> listarPorUsuario(String usuarioId) {
+        return repository.findByUsuarioId(usuarioId);
+    }
+
     public Investimento salvar(Investimento investimento) {
+        return repository.save(investimento);
+    }
+
+    public Investimento atualizar(UUID id, Investimento investimento) {
+        investimento.setId(id);
         return repository.save(investimento);
     }
 
     public void deletar(UUID id) {
         repository.deleteById(id);
     }
+
 
     public double calcularPrecoMedio(UUID investimentoId) {
         Investimento inv = repository.findById(investimentoId).orElseThrow(() -> new NoSuchElementException("Investimento não encontrado"));

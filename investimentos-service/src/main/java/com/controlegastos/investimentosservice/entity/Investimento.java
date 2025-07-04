@@ -21,6 +21,8 @@ public class Investimento {
     @Temporal(TemporalType.DATE)
     private Date data;
 
+    private String usuarioId;
+
     @OneToMany(mappedBy = "investimento", cascade = CascadeType.ALL)
     private List<Renda> rendas;
 

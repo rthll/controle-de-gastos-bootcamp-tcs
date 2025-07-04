@@ -22,6 +22,11 @@ public class RendaService {
         return repository.save(renda);
     }
 
+    public Renda atualizar(UUID id, Renda renda) {
+        renda.setId(id);
+        return repository.save(renda);
+    }
+
     public void deletar(UUID id) {
         repository.deleteById(id);
     }
