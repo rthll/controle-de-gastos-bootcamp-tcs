@@ -8,7 +8,6 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="categorias-service" />
         <module name="investimentos-service" />
       </profile>
       <profile name="Annotation profile for controle-gastos-pessoais" enabled="true">
@@ -25,6 +24,7 @@
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="auth-service" target="1.8" />
+      <module name="categorias-service" target="1.8" />
       <module name="gastos-service (1) (com.example)" target="21" />
     </bytecodeTargetLevel>
   </component>
