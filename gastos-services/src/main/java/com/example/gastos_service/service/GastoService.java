@@ -1,12 +1,13 @@
 package com.example.gastos_service.service;
 
+import com.example.gastos_service.client.CategoriaClient;
+import com.example.gastos_service.dto.CategoriaDTO;
 import com.example.gastos_service.dto.GastoRequestDTO;
 import com.example.gastos_service.dto.GastoResponseDTO;
 import com.example.gastos_service.dto.ParcelaDTO;
 import com.example.gastos_service.entity.Gasto;
 import com.example.gastos_service.entity.Parcela;
 import com.example.gastos_service.repository.GastoRepository;
-import com.example.gastos_service.repository.ParcelaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -20,9 +21,16 @@ import java.util.stream.Collectors;
 public class GastoService {
 
     private final GastoRepository gastoRepository;
-    private final ParcelaRepository parcelaRepository;
+    private final CategoriaClient categoriaClient;
+    private final TokenService tokenService; // Serviço para gerenciar tokens
 
     public GastoResponseDTO criarGasto(String usuarioEmail, GastoRequestDTO dto) {
+        // Validar se a categoria existe
+        String token = tokenService.getCurrentToken();
+        if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
+            throw new RuntimeException("Categoria não encontrada");
+        }
+
         Gasto gasto = Gasto.builder()
                 .descricao(dto.getDescricao())
                 .valorTotal(dto.getValorTotal())
@@ -31,7 +39,7 @@ public class GastoService {
                 .numeroParcelas(dto.getNumeroParcelas())
                 .usuarioId(usuarioEmail)
                 .fonte(dto.getFonte())
-                .categoria(dto.getCategoria())
+                .categoriaId(dto.getCategoriaId())
                 .build();
 
         // Se for parcelado, cria parcelas
@@ -54,7 +62,6 @@ public class GastoService {
         }
 
         Gasto salvo = gastoRepository.save(gasto);
-
         return mapToResponseDTO(salvo);
     }
 
@@ -76,6 +83,9 @@ public class GastoService {
                     .build()).collect(Collectors.toList());
         }
 
+        String token = tokenService.getCurrentToken();
+        CategoriaDTO categoria = categoriaClient.buscarCategoriaPorId(gasto.getCategoriaId(), token);
+
         return GastoResponseDTO.builder()
                 .id(gasto.getId())
                 .descricao(gasto.getDescricao())
@@ -84,9 +94,10 @@ public class GastoService {
                 .parcelado(gasto.isParcelado())
                 .numeroParcelas(gasto.getNumeroParcelas())
                 .usuarioId(gasto.getUsuarioId())
-                .parcelas(parcelas)
                 .fonte(gasto.getFonte())
-                .categoria(gasto.getCategoria())
+                .categoriaId(gasto.getCategoriaId())
+                .categoria(categoria)
+                .parcelas(parcelas)
                 .build();
     }
 }

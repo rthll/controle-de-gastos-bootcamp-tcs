@@ -1,6 +1,5 @@
 package com.example.gastos_service.dto;
 
-import com.example.gastos_service.dto.ParcelaDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -18,23 +17,15 @@ import java.util.UUID;
 public class GastoResponseDTO {
 
     private UUID id;
-
     private String descricao;
-
     private BigDecimal valorTotal;
-
     private LocalDate data;
-
     private boolean parcelado;
-
     private Integer numeroParcelas;
-
     private String usuarioId;
-
     private String fonte;
-
-    private String categoria;
+    private UUID categoriaId;
+    private CategoriaDTO categoria;
 
     private List<ParcelaDTO> parcelas;
-
 }

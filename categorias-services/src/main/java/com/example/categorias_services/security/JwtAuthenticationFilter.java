@@ -1,4 +1,4 @@
-package com.example.gastos_service.security;
+package com.example.categorias_services.security;
 
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
