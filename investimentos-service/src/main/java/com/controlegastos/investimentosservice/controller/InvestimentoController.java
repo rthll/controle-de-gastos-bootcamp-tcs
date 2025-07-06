@@ -1,7 +1,13 @@
 package com.controlegastos.investimentosservice.controller;
-import com.controlegastos.investimentosservice.entity.Investimento;
+
+import com.controlegastos.investimentosservice.dto.InvestimentoRequestDTO;
+import com.controlegastos.investimentosservice.dto.InvestimentoResponseDTO;
+import com.controlegastos.investimentosservice.dto.RentabilidadeRequestDTO;
 import com.controlegastos.investimentosservice.service.InvestimentoService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,45 +18,70 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class InvestimentoController {
 
-    private final InvestimentoService service;
-
-    @GetMapping
-    public List<Investimento> listarTodos() {
-        return service.listarTodos();
-    }
-
-    @GetMapping("/usuario/{usuarioId}")
-    public List<Investimento> listarPorUsuario(@PathVariable String usuarioId) {
-        return service.listarPorUsuario(usuarioId);
-    }
+    private final InvestimentoService investimentoService;
 
     @PostMapping
-    public Investimento criar(@RequestBody Investimento investimento) {
-        return service.salvar(investimento);
+    public ResponseEntity<InvestimentoResponseDTO> criarInvestimento(
+            @RequestBody InvestimentoRequestDTO dto,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        InvestimentoResponseDTO response = investimentoService.criarInvestimento(usuarioEmail, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    @PutMapping("/{id}")
-    public Investimento atualizar(@PathVariable UUID id, @RequestBody Investimento investimento) {
-        return service.atualizar(id, investimento);
+    @GetMapping
+    public ResponseEntity<List<InvestimentoResponseDTO>> listarInvestimentos(Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        List<InvestimentoResponseDTO> investimentos = investimentoService.listarInvestimentosPorUsuario(usuarioEmail);
+        return ResponseEntity.ok(investimentos);
     }
 
-    @DeleteMapping("/deletar/{id}")
-    public void deletar(@PathVariable UUID id) {
-        service.deletar(id);
+    @GetMapping("/{id}")
+    public ResponseEntity<InvestimentoResponseDTO> buscarInvestimento(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        InvestimentoResponseDTO investimento = investimentoService.buscarPorId(id, usuarioEmail);
+        return ResponseEntity.ok(investimento);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarInvestimento(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        investimentoService.deletar(id, usuarioEmail);
+        return ResponseEntity.noContent().build();
     }
 
     @GetMapping("/{id}/preco-medio")
-    public double precoMedio(@PathVariable UUID id) {
-        return service.calcularPrecoMedio(id);
+    public ResponseEntity<Double> calcularPrecoMedio(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        double precoMedio = investimentoService.calcularPrecoMedio(id, usuarioEmail);
+        return ResponseEntity.ok(precoMedio);
     }
 
     @GetMapping("/{id}/valor-total")
-    public double valorTotal(@PathVariable UUID id) {
-        return service.calcularValorTotal(id);
+    public ResponseEntity<Double> calcularValorTotal(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        double valorTotal = investimentoService.calcularValorTotal(id, usuarioEmail);
+        return ResponseEntity.ok(valorTotal);
     }
 
-    @GetMapping("/{id}/rentabilidade")
-    public double rentabilidade(@PathVariable UUID id, @RequestParam double valorAtual) {
-        return service.calcularRentabilidade(id, valorAtual);
+    @PostMapping("/rentabilidade")
+    public ResponseEntity<Double> calcularRentabilidade(
+            @RequestBody RentabilidadeRequestDTO dto,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        double rentabilidade = investimentoService.calcularRentabilidade(
+                dto.getInvestimentoId(),
+                dto.getValorAtualPorTitulo(),
+                usuarioEmail
+        );
+        return ResponseEntity.ok(rentabilidade);
     }
 }

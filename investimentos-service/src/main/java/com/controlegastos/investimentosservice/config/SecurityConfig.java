@@ -23,13 +23,21 @@ public class SecurityConfig {
         http
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .authorizeHttpRequests(auth -> auth
+                .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/investimentos/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/investimentos/**").authenticated()
                         .requestMatchers(HttpMethod.PUT, "/investimentos/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/investimentos/**").authenticated()
+                        //adicionei novas rotas
                         .requestMatchers(HttpMethod.GET, "/compras/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/compras/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/compras/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/compras/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/rendas/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/rendas/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/rendas/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/rendas/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
@@ -37,4 +45,3 @@ public class SecurityConfig {
         return http.build();
     }
 }
-

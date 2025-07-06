@@ -1,7 +1,7 @@
 package com.controlegastos.investimentosservice.entity;
 import jakarta.persistence.*;
 import lombok.*;
-
+import java.util.Date;
 import java.util.UUID;
 
 @Entity
@@ -19,8 +19,12 @@ public class CompraInvestimento {
     private double valor;
     private int quantidade;
 
+    @Temporal(TemporalType.DATE)
+    private Date data;
+
+    private String usuarioId;
+
     @ManyToOne
     @JoinColumn(name = "investimento_id")
     private Investimento investimento;
-
 }

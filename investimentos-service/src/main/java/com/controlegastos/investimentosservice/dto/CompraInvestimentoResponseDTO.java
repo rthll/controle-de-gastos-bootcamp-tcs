@@ -1,11 +1,18 @@
 package com.controlegastos.investimentosservice.dto;
-import lombok.Data;
+
+import lombok.*;
+import java.util.Date;
 import java.util.UUID;
 
 @Data
-public class CompraInvestimentoDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class CompraInvestimentoResponseDTO {
     private UUID id;
     private double valor;
     private int quantidade;
+    private Date data;
+    private String usuarioId;
     private UUID investimentoId;
 }

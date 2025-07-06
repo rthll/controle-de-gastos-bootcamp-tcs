@@ -1,8 +1,12 @@
 package com.controlegastos.investimentosservice.controller;
 
-import com.controlegastos.investimentosservice.entity.Renda;
+import com.controlegastos.investimentosservice.dto.RendaRequestDTO;
+import com.controlegastos.investimentosservice.dto.RendaResponseDTO;
 import com.controlegastos.investimentosservice.service.RendaService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -13,29 +17,48 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class RendaController {
 
-    private final RendaService service;
+    private final RendaService rendaService;
 
-    //Listar
-    @GetMapping
-    public List<Renda> listarTodos() {
-        return service.listarTodos();
-    }
-
-    //Criar
     @PostMapping
-    public Renda criar(@RequestBody Renda renda) {
-        return service.salvar(renda);
+    public ResponseEntity<RendaResponseDTO> criarRenda(
+            @RequestBody RendaRequestDTO dto,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        RendaResponseDTO response = rendaService.criarRenda(usuarioEmail, dto);
+        return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
-    //Atualizar
-    @PutMapping("/{id}")
-    public Renda atualizar(@PathVariable UUID id, @RequestBody Renda renda) {
-        return service.atualizar(id, renda);
+    @GetMapping
+    public ResponseEntity<List<RendaResponseDTO>> listarRendas(Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        List<RendaResponseDTO> rendas = rendaService.listarRendasPorUsuario(usuarioEmail);
+        return ResponseEntity.ok(rendas);
     }
 
-    //Deletar
-    @DeleteMapping("/deletar/{id}")
-    public void deletar(@PathVariable UUID id) {
-        service.deletar(id);
+    @GetMapping("/investimento/{investimentoId}")
+    public ResponseEntity<List<RendaResponseDTO>> listarRendasPorInvestimento(
+            @PathVariable UUID investimentoId,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        List<RendaResponseDTO> rendas = rendaService.listarRendasPorInvestimento(investimentoId, usuarioEmail);
+        return ResponseEntity.ok(rendas);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<RendaResponseDTO> buscarRenda(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        RendaResponseDTO renda = rendaService.buscarPorId(id, usuarioEmail);
+        return ResponseEntity.ok(renda);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deletarRenda(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        String usuarioEmail = authentication.getName();
+        rendaService.deletar(id, usuarioEmail);
+        return ResponseEntity.noContent().build();
     }
 }

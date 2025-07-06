@@ -22,8 +22,9 @@ public class Renda {
     @Temporal(TemporalType.DATE)
     private Date data;
 
+    private String usuarioId;
+
     @ManyToOne
     @JoinColumn(name = "investimento_id")
     private Investimento investimento;
-
 }
