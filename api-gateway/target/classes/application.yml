@@ -29,7 +29,7 @@ spring:
             - PreserveHostHeader
             - RemoveRequestHeader=Cookie
 
-        - id: categorias-service
+        - id: categorias-services
           uri: http://localhost:8083
           predicates:
             - Path=/categorias/**
@@ -41,6 +41,22 @@ spring:
           uri: http://localhost:8084
           predicates:
             - Path=/investimentos/**
+          filters:
+            - PreserveHostHeader
+            - RemoveRequestHeader=Cookie
+
+        - id: investimentos-service-compras
+          uri: http://localhost:8084
+          predicates:
+            - Path=/compras/**
+          filters:
+            - PreserveHostHeader
+            - RemoveRequestHeader=Cookie
+
+        - id: investimentos-service-rendas
+          uri: http://localhost:8084
+          predicates:
+            - Path=/rendas/**
           filters:
             - PreserveHostHeader
             - RemoveRequestHeader=Cookie

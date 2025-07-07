@@ -10,7 +10,7 @@
   <packaging>pom</packaging>
 
   <modules>
-    <module>categorias-service</module>
+    <module>categorias-services</module>
     <module>investimentos-service</module>
     <module>api-gateway</module>
     <module>login-auth-api</module>

@@ -1,6 +1,5 @@
 package com.example.gastos_service.security;
 
-import com.example.gastos_service.security.JwtService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

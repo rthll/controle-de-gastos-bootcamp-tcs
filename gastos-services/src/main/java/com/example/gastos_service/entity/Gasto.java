@@ -37,7 +37,7 @@ public class Gasto {
 
     private String fonte;
 
-    private String categoria;
+    private UUID categoriaId;
 
     @OneToMany(mappedBy = "gasto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Parcela> parcelas;
