@@ -29,9 +29,9 @@ public class SecurityConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true); // Permitir envio de cookies (se necessário)
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // origem do front-end
-        config.setAllowedHeaders(Arrays.asList("*")); // ou especifique "Authorization", "Content-Type"...
+        config.setAllowCredentials(true);
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
+        config.setAllowedHeaders(Arrays.asList("*"));
         config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();

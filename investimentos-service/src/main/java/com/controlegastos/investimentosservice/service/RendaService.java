@@ -1,9 +1,9 @@
 package com.controlegastos.investimentosservice.service;
 
-import com.controlegastos.investimentosservice.dto.RendaRequestDTO;
 import com.controlegastos.investimentosservice.dto.RendaResponseDTO;
-import com.controlegastos.investimentosservice.entity.Investimento;
 import com.controlegastos.investimentosservice.entity.Renda;
+import com.controlegastos.investimentosservice.exception.InvestimentoNotFoundException;
+import com.controlegastos.investimentosservice.exception.RendaNotFoundException;
 import com.controlegastos.investimentosservice.repository.InvestimentoRepository;
 import com.controlegastos.investimentosservice.repository.RendaRepository;
 import lombok.RequiredArgsConstructor;
@@ -19,22 +19,6 @@ public class RendaService {
     private final RendaRepository repository;
     private final InvestimentoRepository investimentoRepository;
 
-    public RendaResponseDTO criarRenda(String usuarioEmail, RendaRequestDTO dto) {
-        Investimento investimento = investimentoRepository.findByIdAndUsuarioId(dto.getInvestimentoId(), usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Investimento não encontrado"));
-
-        Renda renda = Renda.builder()
-                .titulo(dto.getTitulo())
-                .valor(dto.getValor())
-                .data(dto.getData())
-                .usuarioId(usuarioEmail)
-                .investimento(investimento)
-                .build();
-
-        renda = repository.save(renda);
-        return toResponseDTO(renda);
-    }
-
     public List<RendaResponseDTO> listarRendasPorUsuario(String usuarioEmail) {
         return repository.findByUsuarioId(usuarioEmail)
                 .stream()
@@ -44,7 +28,7 @@ public class RendaService {
 
     public List<RendaResponseDTO> listarRendasPorInvestimento(UUID investimentoId, String usuarioEmail) {
         investimentoRepository.findByIdAndUsuarioId(investimentoId, usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Investimento não encontrado"));
+                .orElseThrow(() -> new InvestimentoNotFoundException("Investimento não encontrado"));
 
         return repository.findByInvestimentoIdAndUsuarioId(investimentoId, usuarioEmail)
                 .stream()
@@ -54,13 +38,13 @@ public class RendaService {
 
     public RendaResponseDTO buscarPorId(UUID id, String usuarioEmail) {
         Renda renda = repository.findByIdAndUsuarioId(id, usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Renda não encontrada"));
+                .orElseThrow(() -> new RendaNotFoundException("Renda não encontrada"));
         return toResponseDTO(renda);
     }
 
     public void deletar(UUID id, String usuarioEmail) {
         Renda renda = repository.findByIdAndUsuarioId(id, usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Renda não encontrada"));
+                .orElseThrow(() -> new RendaNotFoundException("Renda não encontrada"));
         repository.deleteById(id);
     }
 

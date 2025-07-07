@@ -11,7 +11,6 @@ import java.util.UUID;
 public class CompraInvestimentoResponseDTO {
     private UUID id;
     private double valor;
-    private int quantidade;
     private Date data;
     private String usuarioId;
     private UUID investimentoId;

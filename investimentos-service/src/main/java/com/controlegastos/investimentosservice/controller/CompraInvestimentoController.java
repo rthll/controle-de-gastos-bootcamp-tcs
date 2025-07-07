@@ -36,7 +36,7 @@ public class CompraInvestimentoController {
 
     @GetMapping("/investimento/{investimentoId}")
     public ResponseEntity<List<CompraInvestimentoResponseDTO>> listarComprasPorInvestimento(
-            @PathVariable UUID investimentoId,
+            @PathVariable("investimentoId") UUID investimentoId,
             Authentication authentication) {
         String usuarioEmail = authentication.getName();
         List<CompraInvestimentoResponseDTO> compras = compraInvestimentoService.listarComprasPorInvestimento(investimentoId, usuarioEmail);
@@ -45,7 +45,7 @@ public class CompraInvestimentoController {
 
     @GetMapping("/{id}")
     public ResponseEntity<CompraInvestimentoResponseDTO> buscarCompra(
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             Authentication authentication) {
         String usuarioEmail = authentication.getName();
         CompraInvestimentoResponseDTO compra = compraInvestimentoService.buscarPorId(id, usuarioEmail);
@@ -54,7 +54,7 @@ public class CompraInvestimentoController {
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletarCompra(
-            @PathVariable UUID id,
+            @PathVariable("id") UUID id,
             Authentication authentication) {
         String usuarioEmail = authentication.getName();
         compraInvestimentoService.deletar(id, usuarioEmail);

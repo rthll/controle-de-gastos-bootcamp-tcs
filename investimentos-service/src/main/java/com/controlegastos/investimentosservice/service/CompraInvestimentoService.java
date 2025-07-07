@@ -4,6 +4,8 @@ import com.controlegastos.investimentosservice.dto.CompraInvestimentoRequestDTO;
 import com.controlegastos.investimentosservice.dto.CompraInvestimentoResponseDTO;
 import com.controlegastos.investimentosservice.entity.CompraInvestimento;
 import com.controlegastos.investimentosservice.entity.Investimento;
+import com.controlegastos.investimentosservice.exception.CompraInvestimentoNotFoundException;
+import com.controlegastos.investimentosservice.exception.InvestimentoNotFoundException;
 import com.controlegastos.investimentosservice.repository.CompraInvestimentoRepository;
 import com.controlegastos.investimentosservice.repository.InvestimentoRepository;
 import lombok.RequiredArgsConstructor;
@@ -21,11 +23,10 @@ public class CompraInvestimentoService {
 
     public CompraInvestimentoResponseDTO criarCompra(String usuarioEmail, CompraInvestimentoRequestDTO dto) {
         Investimento investimento = investimentoRepository.findByIdAndUsuarioId(dto.getInvestimentoId(), usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Investimento não encontrado"));
+                .orElseThrow(() -> new InvestimentoNotFoundException("Investimento não encontrado"));
 
         CompraInvestimento compra = CompraInvestimento.builder()
                 .valor(dto.getValor())
-                .quantidade(dto.getQuantidade())
                 .data(dto.getData())
                 .usuarioId(usuarioEmail)
                 .investimento(investimento)
@@ -44,7 +45,7 @@ public class CompraInvestimentoService {
 
     public List<CompraInvestimentoResponseDTO> listarComprasPorInvestimento(UUID investimentoId, String usuarioEmail) {
         investimentoRepository.findByIdAndUsuarioId(investimentoId, usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Investimento não encontrado"));
+                .orElseThrow(() -> new InvestimentoNotFoundException("Investimento não encontrado"));
 
         return repository.findByInvestimentoIdAndUsuarioId(investimentoId, usuarioEmail)
                 .stream()
@@ -54,13 +55,13 @@ public class CompraInvestimentoService {
 
     public CompraInvestimentoResponseDTO buscarPorId(UUID id, String usuarioEmail) {
         CompraInvestimento compra = repository.findByIdAndUsuarioId(id, usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Compra não encontrada"));
+                .orElseThrow(() -> new CompraInvestimentoNotFoundException("Compra não encontrada"));
         return toResponseDTO(compra);
     }
 
     public void deletar(UUID id, String usuarioEmail) {
         CompraInvestimento compra = repository.findByIdAndUsuarioId(id, usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Compra não encontrada"));
+                .orElseThrow(() -> new CompraInvestimentoNotFoundException("Compra não encontrada"));
         repository.deleteById(id);
     }
 
@@ -68,7 +69,6 @@ public class CompraInvestimentoService {
         return CompraInvestimentoResponseDTO.builder()
                 .id(compra.getId())
                 .valor(compra.getValor())
-                .quantidade(compra.getQuantidade())
                 .data(compra.getData())
                 .usuarioId(compra.getUsuarioId())
                 .investimentoId(compra.getInvestimento().getId())

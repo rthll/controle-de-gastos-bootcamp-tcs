@@ -13,7 +13,10 @@ public class InvestimentoResponseDTO {
     private String titulo;
     private Date data;
     private String usuarioId;
-    private double precoMedio;
     private double valorTotal;
-    private int quantidadeTotal;
+    private String tipo;
+    private double taxaRendimentoMensal;
+    private double rendimentoAcumulado;
+    private double valorAtualTotal;
+    private double rentabilidade;
 }

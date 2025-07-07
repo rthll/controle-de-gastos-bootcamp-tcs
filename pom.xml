@@ -15,6 +15,7 @@
     <module>api-gateway</module>
     <module>login-auth-api</module>
     <module>gastos-services</module>
+    <module>recuperar-senha-service</module>
   </modules>
 
   <dependencyManagement>

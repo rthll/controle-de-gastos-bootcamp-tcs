@@ -17,7 +17,6 @@ public class CompraInvestimento {
     private UUID id;
 
     private double valor;
-    private int quantidade;
 
     @Temporal(TemporalType.DATE)
     private Date data;
