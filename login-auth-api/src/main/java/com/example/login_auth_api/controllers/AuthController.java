@@ -24,7 +24,7 @@ public class AuthController {
 
     public record PasswordUpdateRequest(String email, String newPassword) {}
     public record UserDTO(String id, String name, String email) {}
-
+    
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body){
         User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("usuario não encontrado"));

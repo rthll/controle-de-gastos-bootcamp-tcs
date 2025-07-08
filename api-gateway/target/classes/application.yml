@@ -19,7 +19,7 @@ spring:
         - id: login-auth-api
           uri: http://localhost:8081
           predicates:
-            - Path=/auth/**
+            - Path=/auth/**,/user/**
 
         - id: gastos-services
           uri: http://localhost:8082
