@@ -7,12 +7,14 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.UUID;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
 public class PendenteRequestDTO {
+    private UUID id;
 
     private String descricao;
 
@@ -20,16 +22,14 @@ public class PendenteRequestDTO {
 
     private LocalDate data;
 
-    private Integer numeroParcelas;
-
     //    ID DO USUARIO QUE CRIOU (INICIOU) A DIVISAO
     private String usuarioUmId;
     //    ID DO USUARIO INSERIDO PELO USUARIO INICIAL
     private String usuarioDoisId;
 
-    private String idGasto;
+    private UUID idGasto;
 
     private String fonte;
 
-    private String categoria;
+    private UUID categoriaId;
 }

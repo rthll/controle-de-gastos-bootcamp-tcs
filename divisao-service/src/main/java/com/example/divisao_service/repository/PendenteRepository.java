@@ -7,5 +7,5 @@ import java.util.List;
 import java.util.UUID;
 
 public interface PendenteRepository extends JpaRepository<Pendente, UUID> {
-    List<Pendente> findByUsuarioId(String usuarioDoisId);
+    List<Pendente> findByUsuarioDoisId(String usuarioDoisId);
 }

@@ -28,16 +28,14 @@ public class Pendente {
 
     private LocalDate data;
 
-    private Integer numeroParcelas;
-
 //    ID DO USUARIO QUE CRIOU (INICIOU) A DIVISAO
     private String usuarioUmId;
 //    ID DO USUARIO INSERIDO PELO USUARIO INICIAL
     private String usuarioDoisId;
 //    Necessario o idGasto para saber qual gasto excluir ao ser confirmado
-    private String idGasto;
+    private UUID idGasto;
 
     private String fonte;
 
-    private String categoria;
+    private UUID categoriaId;
 }

@@ -22,4 +22,5 @@ public class GastoRequestDTO {
     private Integer numeroParcelas;
     private String fonte;
     private UUID categoriaId;
+    private String usuarioId;
 }

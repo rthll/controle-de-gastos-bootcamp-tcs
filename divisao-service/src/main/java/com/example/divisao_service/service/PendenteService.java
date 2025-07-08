@@ -1,14 +1,15 @@
 package com.example.divisao_service.service;
 
-import com.example.divisao_service.dto.PendenteRequestDTO;
-import com.example.divisao_service.dto.PendenteResponseDTO;
+import com.example.divisao_service.client.GastoClient;
+import com.example.divisao_service.dto.*;
 import com.example.divisao_service.entity.Pendente;
 import com.example.divisao_service.repository.PendenteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -16,17 +17,27 @@ import java.util.stream.Collectors;
 public class PendenteService {
 
     private final PendenteRepository pendenteRepository;
+    private final GastoClient gastoClient;
+    private final TokenService tokenService; // Serviço para gerenciar tokens
 
-    public PendenteResponseDTO salvarPendente(String usuarioUmEmail, String usuarioDoisEmail, PendenteRequestDTO dto){
+    public PendenteResponseDTO criarPendencia(String usuarioUmEmail, String usuarioDoisEmail, UUID idGasto ){
+//        Buscar o gasto por ID
+        String token = tokenService.getCurrentToken();
+        GastoDTO gasto = gastoClient.gastoExiste(idGasto, token);
+        if (gasto == null) {
+            throw new RuntimeException("Gasto não encontrado");
+        }
+
+        BigDecimal valorDividido = gasto.getValorTotal().divide(BigDecimal.valueOf(2));
         Pendente pendente = Pendente.builder()
-                .descricao(dto.getDescricao())
-                .valorTotal(dto.getValorTotal())
-                .data(dto.getData())
-                .numeroParcelas(dto.getNumeroParcelas())
+                .descricao(gasto.getDescricao())
+                .valorTotal(valorDividido)
+                .data(gasto.getData())
                 .usuarioUmId(usuarioUmEmail) // <- associa o usuário que criou o gasto
                 .usuarioDoisId(usuarioDoisEmail) // <- associa ao usuario que dividira o gasto
-                .fonte(dto.getFonte())
-                .categoria(dto.getCategoria())
+                .idGasto(idGasto)
+                .fonte(gasto.getFonte())
+                .categoriaId(gasto.getCategoriaId())
                 .build();
 
         Pendente salvo = pendenteRepository.save(pendente);
@@ -41,22 +52,63 @@ public class PendenteService {
                 .data(pendente.getData())
                 .usuarioUmId(pendente.getUsuarioUmId())
                 .usuarioDoisId(pendente.getUsuarioDoisId())
+                .idGasto(pendente.getIdGasto())
                 .fonte(pendente.getFonte())
-                .categoria(pendente.getCategoria())
+                .categoriaId(pendente.getCategoriaId())
                 .build();
     }
 
     public List<PendenteResponseDTO> listarPorUsuarioDois(String usuarioEmail) {
-        return pendenteRepository.findByUsuarioId(usuarioEmail)
+        return pendenteRepository.findByUsuarioDoisId(usuarioEmail)
                 .stream()
                 .map(this::mapToResponseDTO)
                 .collect(Collectors.toList());
     }
 
-    public void divideGastos(){
-//        Este metodo ira receber o id/ou objeto da tabela pendente, salvar na tabela de gastos 2x
-//        uma com o id do usuario1 (criou o gasto) e outra com id do usuario2, apos isso deletar da tabela pendente
-//
-    }
+    public DivisaoResponseDTO aceitaDivisao(UUID id) {
+        Pendente pendencia = pendenteRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Pendencia não encontrada"));
 
+        String token = tokenService.getCurrentToken();
+
+        GastoDTO gastoUm = GastoDTO.builder()
+                .descricao(pendencia.getDescricao())
+                .valorTotal(pendencia.getValorTotal())
+                .data(pendencia.getData())
+                .parcelado(false)
+                .numeroParcelas(1)
+                .usuarioId(pendencia.getUsuarioUmId())
+                .fonte(pendencia.getFonte())
+                .categoriaId(pendencia.getCategoriaId())
+                .build();
+        GastoDTO gastoDividido = gastoClient.divideGastos(gastoUm, token);
+
+//        Criar categoria de divisao para o usuario2
+        CategoriaDTO categoria = CategoriaDTO.builder()
+                .nome("Divisao")
+                .descricao("Divisao de gastos")
+                .usuarioId(pendencia.getUsuarioDoisId())
+                .build();
+        CategoriaDTO novaCategoria = gastoClient.criarCategoria(categoria, token);
+
+        GastoDTO gastoDois = GastoDTO.builder()
+                .descricao(pendencia.getDescricao())
+                .valorTotal(pendencia.getValorTotal())
+                .data(pendencia.getData())
+                .parcelado(false)
+                .numeroParcelas(1)
+                .usuarioId(pendencia.getUsuarioDoisId())
+                .fonte(pendencia.getFonte())
+                .categoriaId(novaCategoria.getId())
+                .build();
+        GastoDTO gastoDivididoDois = gastoClient.divideGastos(gastoDois, token);
+
+        pendenteRepository.deleteById(id);
+        gastoClient.deletarGastoById(pendencia.getIdGasto());
+
+        return DivisaoResponseDTO.builder()
+                .gastoUsuarioUm(gastoDividido)
+                .gastoUsuarioDois(gastoDivididoDois)
+                .build();
+    }
 }

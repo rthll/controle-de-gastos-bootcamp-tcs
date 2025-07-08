@@ -13,24 +13,16 @@ import java.util.UUID;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class PendenteResponseDTO {
+public class GastoDTO {
 
     private UUID id;
-
     private String descricao;
-
     private BigDecimal valorTotal;
-
     private LocalDate data;
-
-    //    ID DO USUARIO QUE CRIOU (INICIOU) A DIVISAO
-    private String usuarioUmId;
-    //    ID DO USUARIO INSERIDO PELO USUARIO INICIAL
-    private String usuarioDoisId;
-
-    private UUID idGasto;
-
+    private boolean parcelado;
+    private Integer numeroParcelas;
+    private String usuarioId;
     private String fonte;
-
     private UUID categoriaId;
+
 }
