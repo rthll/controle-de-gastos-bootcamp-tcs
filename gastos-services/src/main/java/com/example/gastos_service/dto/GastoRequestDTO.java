@@ -15,6 +15,7 @@ import java.util.UUID;
 @Builder
 public class GastoRequestDTO {
 
+    private UUID id;
     private String descricao;
     private BigDecimal valorTotal;
     private LocalDate data;

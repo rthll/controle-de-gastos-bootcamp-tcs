@@ -23,6 +23,8 @@ public class Gasto {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    private boolean ativo;
+
     private String descricao;
 
     private BigDecimal valorTotal;
@@ -41,4 +43,6 @@ public class Gasto {
 
     @OneToMany(mappedBy = "gasto", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Parcela> parcelas;
+
+
 }

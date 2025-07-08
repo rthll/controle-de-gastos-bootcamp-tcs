@@ -1,5 +1,6 @@
 package com.example.categorias_services.service;
 
+import com.example.categorias_services.client.GastoClient;
 import com.example.categorias_services.dto.CategoriaRequestDTO;
 import com.example.categorias_services.dto.CategoriaResponseDTO;
 import com.example.categorias_services.entity.Categoria;
@@ -16,6 +17,8 @@ import java.util.stream.Collectors;
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
+    private final GastoClient gastoClient;
+    private final TokenService tokenService;
 
     public CategoriaResponseDTO criarCategoria(String usuarioEmail, CategoriaRequestDTO dto) {
         Categoria categoria = Categoria.builder()
@@ -52,6 +55,11 @@ public class CategoriaService {
 
         if (!categoria.getUsuarioId().equals(usuarioEmail)) {
             throw new RuntimeException("Categoria não pertence ao usuário");
+        }
+
+        String token = tokenService.getCurrentToken();
+        if (gastoClient.existeGastoComCategoria(id, token)) {
+            throw new RuntimeException("Não é possível excluir a categoria pois existem gastos associados a ela");
         }
 
         categoriaRepository.deleteById(id);

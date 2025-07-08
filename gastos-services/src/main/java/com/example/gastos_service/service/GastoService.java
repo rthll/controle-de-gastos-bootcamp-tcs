@@ -14,10 +14,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.TreeMap;
+import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
@@ -27,10 +24,9 @@ public class GastoService {
 
     private final GastoRepository gastoRepository;
     private final CategoriaClient categoriaClient;
-    private final TokenService tokenService; // Serviço para gerenciar tokens
+    private final TokenService tokenService;
 
     public GastoResponseDTO criarGasto(String usuarioEmail, GastoRequestDTO dto) {
-        // Validar se a categoria existe
         String token = tokenService.getCurrentToken();
         if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
             throw new RuntimeException("Categoria não encontrada");
@@ -45,13 +41,13 @@ public class GastoService {
                 .usuarioId(usuarioEmail)
                 .fonte(dto.getFonte())
                 .categoriaId(dto.getCategoriaId())
+                .ativo(true)
                 .build();
 
-        // Se for parcelado, cria parcelas
         if (dto.isParcelado() && dto.getNumeroParcelas() != null && dto.getNumeroParcelas() > 1) {
             List<Parcela> parcelas = new ArrayList<>();
             BigDecimal valorParcela = dto.getValorTotal()
-                    .divide(BigDecimal.valueOf(dto.getNumeroParcelas()), 2, RoundingMode.HALF_UP); //método que foi substituido estava deprecated
+                    .divide(BigDecimal.valueOf(dto.getNumeroParcelas()), 2, RoundingMode.HALF_UP);
 
             for (int i = 0; i < dto.getNumeroParcelas(); i++) {
                 Parcela parcela = Parcela.builder()
@@ -62,12 +58,75 @@ public class GastoService {
                         .build();
                 parcelas.add(parcela);
             }
-
             gasto.setParcelas(parcelas);
         }
 
         Gasto salvo = gastoRepository.save(gasto);
         return mapToResponseDTO(salvo);
+    }
+
+    public GastoResponseDTO alterarStatusAtivo(UUID gastoId, boolean novoStatus, String emailUsuario) {
+        Gasto gasto = gastoRepository.findById(gastoId)
+                .orElseThrow(() -> new RuntimeException("Gasto não encontrado"));
+
+        if (!gasto.getUsuarioId().equals(emailUsuario)) {
+            throw new RuntimeException("Você não tem permissão para alterar este gasto.");
+        }
+
+        gasto.setAtivo(novoStatus);
+        Gasto gastoSalvo = gastoRepository.save(gasto);
+        return mapToResponseDTO(gastoSalvo);
+    }
+
+    public GastoResponseDTO editarGasto(UUID gastoId, GastoRequestDTO dto, String emailUsuario) {
+        Gasto gasto = gastoRepository.findById(gastoId)
+                .orElseThrow(() -> new RuntimeException("Gasto não encontrado"));
+
+        if (!gasto.getUsuarioId().equals(emailUsuario)) {
+            throw new RuntimeException("Você não tem permissão para editar este gasto.");
+        }
+
+        String token = tokenService.getCurrentToken();
+        if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
+            throw new RuntimeException("Categoria não encontrada");
+        }
+
+        gasto.setDescricao(dto.getDescricao());
+        gasto.setValorTotal(dto.getValorTotal());
+        gasto.setData(dto.getData());
+        gasto.setFonte(dto.getFonte());
+        gasto.setCategoriaId(dto.getCategoriaId());
+
+        if (dto.isParcelado() != gasto.isParcelado() ||
+                !Objects.equals(dto.getNumeroParcelas(), gasto.getNumeroParcelas())) {
+
+            if (gasto.getParcelas() != null) {
+                gasto.getParcelas().clear();
+            }
+
+            gasto.setParcelado(dto.isParcelado());
+            gasto.setNumeroParcelas(dto.getNumeroParcelas());
+
+            if (dto.isParcelado() && dto.getNumeroParcelas() != null && dto.getNumeroParcelas() > 1) {
+                List<Parcela> novasParcelas = new ArrayList<>();
+                BigDecimal valorParcela = dto.getValorTotal()
+                        .divide(BigDecimal.valueOf(dto.getNumeroParcelas()), 2, RoundingMode.HALF_UP);
+
+                for (int i = 0; i < dto.getNumeroParcelas(); i++) {
+                    Parcela parcela = Parcela.builder()
+                            .numeroParcela(i + 1)
+                            .valorParcela(valorParcela)
+                            .dataVencimento(dto.getData().plusMonths(i))
+                            .gasto(gasto)
+                            .build();
+                    novasParcelas.add(parcela);
+                }
+                gasto.setParcelas(novasParcelas);
+            }
+        }
+
+        Gasto gastoSalvo = gastoRepository.save(gasto);
+        return mapToResponseDTO(gastoSalvo);
     }
 
     public List<GastoResponseDTO> listarPorUsuario(String usuarioEmail) {
@@ -80,29 +139,20 @@ public class GastoService {
     public BigDecimal calcularTotalGastosMesAtual(String usuarioEmail) {
         YearMonth mesAtual = YearMonth.now();
 
-        // Debug: Verificar se há gastos para o usuário
         List<Gasto> gastos = gastoRepository.findByUsuarioId(usuarioEmail);
-        System.out.println("Gastos encontrados para o usuário: " + gastos.size());
 
         BigDecimal total = gastos.stream()
+                .filter(Gasto::isAtivo)
                 .peek(gasto -> System.out.println("Gasto: " + gasto.getDescricao() + ", Parcelado: " + gasto.isParcelado()))
                 .flatMap(gasto -> {
-                    // Debug: Verificar se tem parcelas
                     if (gasto.getParcelas() != null) {
-                        System.out.println("Parcelas do gasto '" + gasto.getDescricao() + "': " + gasto.getParcelas().size());
                         return gasto.getParcelas().stream();
                     } else {
-                        System.out.println("Gasto '" + gasto.getDescricao() + "' não tem parcelas");
                         return Stream.empty();
                     }
                 })
                 .peek(parcela -> {
                     YearMonth vencimento = YearMonth.from(parcela.getDataVencimento());
-                    System.out.println("Parcela: " + parcela.getNumeroParcela() +
-                            ", Vencimento: " + parcela.getDataVencimento() +
-                            ", Mês/Ano: " + vencimento +
-                            ", Mês atual: " + mesAtual +
-                            ", Corresponde ao mês atual? " + vencimento.equals(mesAtual));
                 })
                 .filter(parcela -> {
                     YearMonth vencimento = YearMonth.from(parcela.getDataVencimento());
@@ -111,7 +161,6 @@ public class GastoService {
                 .map(Parcela::getValorParcela)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        System.out.println("Total calculado: " + total);
         return total;
     }
 
@@ -119,7 +168,14 @@ public class GastoService {
         LocalDate hoje = LocalDate.now();
 
         return gastoRepository.findByUsuarioId(usuarioEmail).stream()
-                .flatMap(gasto -> gasto.getParcelas().stream())
+                .filter(Gasto::isAtivo)
+                .flatMap(gasto -> {
+                    if (gasto.getParcelas() != null && !gasto.getParcelas().isEmpty()) {
+                        return gasto.getParcelas().stream();
+                    } else {
+                        return Stream.empty();
+                    }
+                })
                 .filter(parcela -> parcela.getDataVencimento().isAfter(hoje))
                 .map(Parcela::getValorParcela)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
@@ -127,22 +183,21 @@ public class GastoService {
 
     public Map<YearMonth, BigDecimal> calcularTotalGastosPorMes(String usuarioEmail) {
         List<Gasto> gastos = gastoRepository.findByUsuarioId(usuarioEmail);
-
         Map<YearMonth, BigDecimal> totalPorMes = new TreeMap<>();
 
-        gastos.forEach(gasto -> {
-            if (gasto.isParcelado() && gasto.getParcelas() != null && !gasto.getParcelas().isEmpty()) {
-                // Para gastos parcelados, distribui as parcelas pelos meses
-                gasto.getParcelas().forEach(parcela -> {
-                    YearMonth mesVencimento = YearMonth.from(parcela.getDataVencimento());
-                    totalPorMes.merge(mesVencimento, parcela.getValorParcela(), BigDecimal::add);
+        gastos.stream()
+                .filter(Gasto::isAtivo)
+                .forEach(gasto -> {
+                    if (gasto.isParcelado() && gasto.getParcelas() != null && !gasto.getParcelas().isEmpty()) {
+                        gasto.getParcelas().forEach(parcela -> {
+                            YearMonth mesVencimento = YearMonth.from(parcela.getDataVencimento());
+                            totalPorMes.merge(mesVencimento, parcela.getValorParcela(), BigDecimal::add);
+                        });
+                    } else {
+                        YearMonth mesGasto = YearMonth.from(gasto.getData());
+                        totalPorMes.merge(mesGasto, gasto.getValorTotal(), BigDecimal::add);
+                    }
                 });
-            } else {
-                // Para gastos não parcelados, adiciona no mês do gasto
-                YearMonth mesGasto = YearMonth.from(gasto.getData());
-                totalPorMes.merge(mesGasto, gasto.getValorTotal(), BigDecimal::add);
-            }
-        });
 
         return totalPorMes;
     }
@@ -173,7 +228,14 @@ public class GastoService {
                 .categoriaId(gasto.getCategoriaId())
                 .categoria(categoria)
                 .parcelas(parcelas)
+                .ativo(gasto.isAtivo())
                 .build();
     }
 
+    public boolean existeGastoComCategoria(UUID categoriaId, String usuarioEmail) {
+        return gastoRepository.findByUsuarioId(usuarioEmail)
+                .stream()
+                .filter(Gasto::isAtivo)
+                .anyMatch(gasto -> gasto.getCategoriaId().equals(categoriaId));
+    }
 }

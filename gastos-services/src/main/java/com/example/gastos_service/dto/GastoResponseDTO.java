@@ -17,6 +17,7 @@ import java.util.UUID;
 public class GastoResponseDTO {
 
     private UUID id;
+    private boolean ativo;
     private String descricao;
     private BigDecimal valorTotal;
     private LocalDate data;
