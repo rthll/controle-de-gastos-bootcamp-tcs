@@ -69,7 +69,32 @@ npm run dev
 Acesse no navegador:
 http://localhost:5173
 ```
-## 📊 Diagrama de Arquitetura do Software:
+## ⚙️ Funcionalidades
+```bash
+- Cadastro e autenticação de usuários com JWT.
+- Recuperação de senha via e-mail.
+- Cadastro e gerenciamento de categorias.
+- Registro e edição de gastos e investimentos.
+- Geração de relatórios financeiros.
+- Divisão de gastos entre os usuários.
+```
+## 🛠 Estrutura dos microserviços
+```bash
+- `api-gateway`: Roteia e autentica requisições
+- `login-auth-api`: Autenticação e segurança
+- `recuperar-senha-service`: Recuperação de senha por e-mail
+- `gastos-services`: Registro e consulta de gastos
+- `investimentos-service`: Controle de investimentos
+- `categorias-services`: CRUD de categorias
+```
+## 🔐 Segurança
+```bash
+- Autenticação via JWT
+- Filtros de segurança com Spring Security
+- Controle de acesso por rotas no API Gateway
+```
+
+## 📊 Diagrama de Arquitetura do Software
 Abaixo está o diagrama representando os microserviços, API Gateway, persistência de dados e serviços externos usados no projeto:
 
 ![Diagrama da Arquitetura](diagrama%20arquitetura%20software.png)
