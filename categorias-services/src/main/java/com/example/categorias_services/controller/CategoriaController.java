@@ -44,6 +44,12 @@ public class CategoriaController {
         return ResponseEntity.ok(categoria);
     }
 
+    @GetMapping("/nome/{nome}")
+    public ResponseEntity<CategoriaResponseDTO> buscarPorNome(@PathVariable String nome) {
+        CategoriaResponseDTO categoria = categoriaService.buscarPorNome(nome);
+        return ResponseEntity.ok(categoria);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable UUID id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

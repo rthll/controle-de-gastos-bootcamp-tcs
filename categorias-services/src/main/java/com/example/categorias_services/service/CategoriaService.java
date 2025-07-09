@@ -65,4 +65,9 @@ public class CategoriaService {
                 .usuarioId(categoria.getUsuarioId())
                 .build();
     }
+
+    public CategoriaResponseDTO buscarPorNome(String nome) {
+        Categoria categoria = categoriaRepository.findByNome(nome);
+        return toResponseDTO(categoria);
+    }
 }

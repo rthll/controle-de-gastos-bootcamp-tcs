@@ -71,13 +71,13 @@ public class GastoController {
         return ResponseEntity.ok(categoria);
     }
 
-    @PostMapping("/teste")
+    @PostMapping("/divisao")
     public ResponseEntity<GastoResponseDTO> criarGastoTeste(@RequestBody GastoRequestDTO dto) {
-        GastoResponseDTO response = gastoService.criarGastoTeste(dto);
+        GastoResponseDTO response = gastoService.criarGastoDivisao(dto);
         return ResponseEntity.ok(response);
     }
 
-    @DeleteMapping("/teste/{idgasto}")
+    @DeleteMapping("/divisao/{idgasto}")
     public void deletarGastoById(@PathVariable UUID idgasto){
         gastoService.deletById(idgasto);
     }

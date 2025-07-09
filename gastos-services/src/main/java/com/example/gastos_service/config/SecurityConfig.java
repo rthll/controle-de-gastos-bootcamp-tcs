@@ -24,7 +24,8 @@ public class SecurityConfig {
                 .csrf(csrf -> csrf.disable())
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
-                        .requestMatchers("/gastos/teste/**").permitAll()
+                        .requestMatchers("/gastos/divisao/**").permitAll()
+                        .requestMatchers(HttpMethod.DELETE, "/gastos/divisao/**").permitAll()
                         .requestMatchers("/actuator/**").permitAll()
                         .requestMatchers(HttpMethod.GET, "/gastos/**").authenticated()
                         .requestMatchers(HttpMethod.POST, "/gastos/**").authenticated()

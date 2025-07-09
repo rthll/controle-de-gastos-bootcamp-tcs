@@ -83,13 +83,20 @@ public class PendenteService {
                 .build();
         GastoDTO gastoDividido = gastoClient.divideGastos(gastoUm, token);
 
-//        Criar categoria de divisao para o usuario2
-        CategoriaDTO categoria = CategoriaDTO.builder()
-                .nome("Divisao")
-                .descricao("Divisao de gastos")
-                .usuarioId(pendencia.getUsuarioDoisId())
-                .build();
-        CategoriaDTO novaCategoria = gastoClient.criarCategoria(categoria, token);
+
+        CategoriaDTO buscaCategoria = gastoClient.buscarCategoriaPorNome("Divisao", token);
+        CategoriaDTO novaCategoria;
+        if(buscaCategoria == null){
+            // Criar categoria de divisao para o usuario2
+            CategoriaDTO categoria = CategoriaDTO.builder()
+                    .nome("Divisao")
+                    .descricao("Divisao de gastos")
+                    .usuarioId(pendencia.getUsuarioDoisId())
+                    .build();
+            novaCategoria = gastoClient.criarCategoria(categoria, token);
+        }else{
+            novaCategoria = buscaCategoria;
+        }
 
         GastoDTO gastoDois = GastoDTO.builder()
                 .descricao(pendencia.getDescricao())

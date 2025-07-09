@@ -198,7 +198,7 @@ public class GastoService {
                 .build();
     }
 
-    public GastoResponseDTO criarGastoTeste(GastoRequestDTO dto) {
+    public GastoResponseDTO criarGastoDivisao(GastoRequestDTO dto) {
         Gasto gasto = Gasto.builder()
                 .descricao(dto.getDescricao())
                 .valorTotal(dto.getValorTotal())

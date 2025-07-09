@@ -56,7 +56,7 @@ public class GastoClient {
             headers.setContentType(MediaType.APPLICATION_JSON);
             HttpEntity<GastoDTO> entity = new HttpEntity<>(gasto, headers);
 
-            String url = gastoServiceUrl + "/gastos/teste";
+            String url = gastoServiceUrl + "/gastos/divisao";
 
             ResponseEntity<GastoDTO> response = restTemplate.exchange(
                     url,
@@ -95,13 +95,13 @@ public class GastoClient {
         }
     }
 
-    public CategoriaDTO buscarCategoriaPorId(UUID categoriaId, String token) {
+    public CategoriaDTO buscarCategoriaPorNome(String nome, String token) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            String url = categoriaServiceUrl + "/categorias/" + categoriaId;
+            String url = categoriaServiceUrl + "/categorias/nome/" + nome;
 
             ResponseEntity<CategoriaDTO> response = restTemplate.exchange(
                     url,
@@ -112,7 +112,7 @@ public class GastoClient {
 
             return response.getBody();
         } catch (Exception e) {
-            log.error("Erro ao buscarrrr categoria com ID: {}", categoriaId, e);
+            log.error("Erro durante a divisao de gastos ao buscar categoria  com Nome: {}", nome, e);
             return null;
         }
     }
@@ -122,13 +122,13 @@ public class GastoClient {
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            String url = categoriaServiceUrl + "/gastos/teste/" + idgasto;
+            String url = gastoServiceUrl + "/gastos/divisao/" + idgasto;
 
-            ResponseEntity<CategoriaDTO> response = restTemplate.exchange(
+            ResponseEntity<GastoDTO> response = restTemplate.exchange(
                     url,
                     HttpMethod.DELETE,
                     entity,
-                    CategoriaDTO.class
+                    GastoDTO.class
             );
 
         } catch (Exception e) {
