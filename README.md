@@ -99,4 +99,9 @@ Abaixo está o diagrama representando os microserviços, API Gateway, persistên
 
 ![Diagrama da Arquitetura](diagrama%20arquitetura%20software.png)
 
+## 📄 Licença
+
+Este projeto está licenciado sob a Licença MIT. Veja o arquivo [LICENSE](LICENSE) para mais detalhes.
+
+
 
