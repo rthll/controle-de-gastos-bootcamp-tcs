@@ -9,3 +9,10 @@ O objetivo do projeto é oferecer um sistema de controle de gastos e investiment
 - Relatórios e listagem de despesas e rendas.
 - API REST desenvolvida com Spring Boot.
 - Banco de dados H2 em memória.
+
+- 
+## 👤 Autores
+
+- Repositório GitHub: https://github.com/rthll/controle-de-gastos-bootcamp-tcs
+
+- Desenvolvedores do Projeto: Caio Alves Galassi, João Pedro Moreira, Arion Teixeira, Vinícius Augusto da Costa, Rythielly Francisco Garcia Bezerra. 
