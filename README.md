@@ -28,7 +28,7 @@ O objetivo do projeto é oferecer um sistema de controle de gastos e investiment
 ### Frontend
 - React - Biblioteca JavaScript para construção da interface do usuário
 
-## 🔧 Como Executar o Projeto
+## 🔧 Como Executar o Software
 
 ###  Pré-requisitos: 
 - Java 21 instalado
