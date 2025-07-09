@@ -44,7 +44,6 @@ public class UserController {
             }
         }
 
-        System.out.println("Email obtido: " + email);
 
         if (email == null) {
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body("Usuário não autenticado corretamente.");
@@ -79,7 +78,6 @@ public class UserController {
 
         if (updated) {
             repository.save(user);
-            System.out.println("User atualizado com sucesso!");
             return ResponseEntity.ok("Dados atualizados com sucesso.");
         }
 

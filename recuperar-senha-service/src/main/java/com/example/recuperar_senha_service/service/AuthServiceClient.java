@@ -20,7 +20,6 @@ public class AuthServiceClient {
 
     public UserDTO getUserByEmail(String email) {
         try {
-            // CORREÇÃO: Usar o método correto do RestTemplate com placeholder
             String url = authServiceUrl + "/internal/user/email/{email}";
             ResponseEntity<UserDTO> response = restTemplate.getForEntity(url, UserDTO.class, email);
             return response.getBody();

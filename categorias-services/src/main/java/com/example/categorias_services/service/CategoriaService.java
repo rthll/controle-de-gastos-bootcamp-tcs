@@ -4,6 +4,9 @@ import com.example.categorias_services.client.GastoClient;
 import com.example.categorias_services.dto.CategoriaRequestDTO;
 import com.example.categorias_services.dto.CategoriaResponseDTO;
 import com.example.categorias_services.entity.Categoria;
+import com.example.categorias_services.exception.CategoriaMembershipException;
+import com.example.categorias_services.exception.CategoriaNotBelongToUser;
+import com.example.categorias_services.exception.CategoriaNotFoundException;
 import com.example.categorias_services.repository.CategoriaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -40,10 +43,10 @@ public class CategoriaService {
 
     public CategoriaResponseDTO buscarPorId(UUID id, String usuarioEmail) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));
 
         if (!categoria.getUsuarioId().equals(usuarioEmail)) {
-            throw new RuntimeException("Categoria não pertence ao usuário");
+            throw new CategoriaNotBelongToUser("Categoria não pertence ao usuário");
         }
 
         return toResponseDTO(categoria);
@@ -51,15 +54,15 @@ public class CategoriaService {
 
     public void deletar(UUID id, String usuarioEmail) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));
 
         if (!categoria.getUsuarioId().equals(usuarioEmail)) {
-            throw new RuntimeException("Categoria não pertence ao usuário");
+            throw new CategoriaNotBelongToUser("Categoria não pertence ao usuário");
         }
 
         String token = tokenService.getCurrentToken();
         if (gastoClient.existeGastoComCategoria(id, token)) {
-            throw new RuntimeException("Não é possível excluir a categoria pois existem gastos associados a ela");
+            throw new CategoriaMembershipException("Não é possível excluir a categoria pois existem gastos associados a ela");
         }
 
         categoriaRepository.deleteById(id);
