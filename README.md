@@ -70,10 +70,8 @@ Acesse no navegador:
 http://localhost:5173
 ```
 ## Arquitetura do Software
-```bash
 Abaixo está o diagrama representando os microserviços, API Gateway, persistência de dados e serviços externos usados no projeto:
 
 ![Diagrama da Arquitetura](diagrama%20arquitetura%20software.png)
 
-```
 
