@@ -71,7 +71,9 @@ http://localhost:5173
 ```
 ## Arquitetura do Software
 ```bash
-![image](https://github.com/user-attachments/assets/31a21d97-a50b-4800-befd-1398a4c09458)
+Abaixo está o diagrama representando os microserviços, API Gateway, persistência de dados e serviços externos usados no projeto:
+
+![Diagrama da Arquitetura](diagrama%20arquitetura%20software.png)
 
 ```
 
