@@ -291,4 +291,49 @@ public class GastoService {
         gastos.forEach(gasto -> gasto.setAtivo(false));
         gastoRepository.saveAll(gastos);
     }
+
+    public GastoResponseDTO buscarPorId(UUID id, String usuarioEmail) {
+        Gasto gasto = gastoRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Gasto não encontrada"));
+
+        if (!gasto.getUsuarioId().equals(usuarioEmail)) {
+            throw new RuntimeException("Gasto não pertence ao usuário");
+        }
+
+        return toResponseDTO(gasto);
+    }
+
+    private GastoResponseDTO toResponseDTO(Gasto gasto) {
+        return GastoResponseDTO.builder()
+                .id(gasto.getId())
+                .descricao(gasto.getDescricao())
+                .valorTotal(gasto.getValorTotal())
+                .data(gasto.getData())
+                .parcelado(gasto.isParcelado())
+                .numeroParcelas(gasto.getNumeroParcelas())
+                .usuarioId(gasto.getUsuarioId())
+                .fonte(gasto.getFonte())
+                .categoriaId(gasto.getCategoriaId())
+                .build();
+    }
+
+    public GastoResponseDTO criarGastoDivisao(GastoRequestDTO dto) {
+        Gasto gasto = Gasto.builder()
+                .descricao(dto.getDescricao())
+                .valorTotal(dto.getValorTotal())
+                .data(dto.getData())
+                .parcelado(dto.isParcelado())
+                .numeroParcelas(dto.getNumeroParcelas())
+                .usuarioId(dto.getUsuarioId())
+                .fonte(dto.getFonte())
+                .categoriaId(dto.getCategoriaId())
+                .build();
+
+        Gasto salvo = gastoRepository.save(gasto);
+        return mapToResponseDTO(salvo);
+    }
+
+    public void deletById(UUID id){
+        gastoRepository.deleteById(id);
+    }
 }

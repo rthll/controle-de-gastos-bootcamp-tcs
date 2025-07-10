@@ -51,4 +51,10 @@ public class CategoriaController {
         categoriaService.deletar(id, usuarioEmail);
         return ResponseEntity.noContent().build();
     }
+
+    @GetMapping("/nome/{nome}")
+    public ResponseEntity<CategoriaResponseDTO> buscarPorNome(@PathVariable String nome) {
+        CategoriaResponseDTO categoria = categoriaService.buscarPorNome(nome);
+        return ResponseEntity.ok(categoria);
+    }
 }

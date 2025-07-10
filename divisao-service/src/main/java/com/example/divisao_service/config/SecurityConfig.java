@@ -1,6 +1,6 @@
-package com.example.gastos_service.config;
+package com.example.divisao_service.config;
 
-import com.example.gastos_service.security.JwtAuthenticationFilter;
+import com.example.divisao_service.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,13 +25,11 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers("/gastos/divisao/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/gastos/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/gastos/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/gastos/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/gastos/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/parcelas/**").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/gastos/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/divisao/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/divisao/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/divisao/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/divisao/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/divisao/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

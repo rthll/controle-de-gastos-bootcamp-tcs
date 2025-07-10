@@ -16,6 +16,7 @@
     <module>login-auth-api</module>
     <module>gastos-services</module>
     <module>recuperar-senha-service</module>
+    <module>divisao-service</module>
   </modules>
 
   <dependencyManagement>

@@ -20,6 +20,7 @@
         <module name="gastos-service (1) (com.example)" />
         <module name="gastos-service" />
         <module name="categorias-services" />
+        <module name="divisao-service" />
         <module name="login-auth-api" />
         <module name="recuperar-senha-service" />
       </profile>
@@ -27,8 +28,6 @@
     <bytecodeTargetLevel>
       <module name="auth-service" target="1.8" />
       <module name="categorias-service" target="1.8" />
-      <module name="controle-gastos-pessoais" target="1.5" />
-      <module name="divisao-service" target="21" />
       <module name="gastos-service (1) (com.example)" target="21" />
     </bytecodeTargetLevel>
   </component>
@@ -36,6 +35,7 @@
     <option name="ADDITIONAL_OPTIONS_OVERRIDE">
       <module name="api-gateway" options="-parameters" />
       <module name="categorias-services" options="-parameters" />
+      <module name="divisao-service" options="-parameters" />
       <module name="gastos-service" options="-parameters" />
       <module name="gastos-service (1) (com.example)" options="-parameters" />
       <module name="login-auth-api" options="-parameters" />
