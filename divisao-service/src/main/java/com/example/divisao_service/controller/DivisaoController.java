@@ -47,5 +47,11 @@ public class DivisaoController {
         return ResponseEntity.ok(response);
     }
 
+    @DeleteMapping("/negar")
+    public void recusaDivisao(@RequestBody PendenteRequestDTO request){
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        pendenteService.recusaDivisao(request.getId());
+    }
+
 
 }

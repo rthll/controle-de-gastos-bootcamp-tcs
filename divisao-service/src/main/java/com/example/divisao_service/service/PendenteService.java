@@ -118,4 +118,8 @@ public class PendenteService {
                 .gastoUsuarioDois(gastoDivididoDois)
                 .build();
     }
+
+    public void recusaDivisao(UUID id) {
+        pendenteRepository.deleteById(id);
+    }
 }
