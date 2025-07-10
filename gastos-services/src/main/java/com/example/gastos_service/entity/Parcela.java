@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.UUID;
 
 @Entity
@@ -24,7 +24,7 @@ public class Parcela {
 
     private BigDecimal valorParcela;
 
-    private LocalDateTime dataVencimento;
+    private LocalDate dataVencimento;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "gasto_id")

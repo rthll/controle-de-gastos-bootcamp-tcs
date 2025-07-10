@@ -10,7 +10,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.Optional;
 
@@ -22,9 +25,6 @@ public class AuthController {
     private final PasswordEncoder passwordEncoder;
     private final TokenService tokenService;
 
-    public record PasswordUpdateRequest(String email, String newPassword) {}
-    public record UserDTO(String id, String name, String email) {}
-    
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body){
         User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new RuntimeException("usuario não encontrado"));
@@ -51,28 +51,4 @@ public class AuthController {
         }
         return ResponseEntity.badRequest().build();
     }
-
-    /*
-    @GetMapping("/internal/user/email/{email}")
-    public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
-        Optional<User> user = repository.findByEmail(email);
-        if (user.isPresent()) {
-            User u = user.get();
-            UserDTO userDTO = new UserDTO(u.getId(), u.getName(), u.getEmail());
-            return ResponseEntity.ok(userDTO);
-        }
-        return ResponseEntity.notFound().build();
-    }
-
-    @PostMapping("/internal/user/password")
-    public ResponseEntity<Void> updateUserPassword(@RequestBody PasswordUpdateRequest request) {
-        Optional<User> user = repository.findByEmail(request.email());
-        if (user.isPresent()) {
-            User u = user.get();
-            u.setPassword(passwordEncoder.encode(request.newPassword()));
-            repository.save(u);
-            return ResponseEntity.ok().build();
-        }
-        return ResponseEntity.notFound().build();
-    } */
 }

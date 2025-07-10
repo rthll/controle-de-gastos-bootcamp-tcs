@@ -20,7 +20,7 @@ public class SecurityConfig {
         return http
                 .csrf(ServerHttpSecurity.CsrfSpec::disable)
                 .authorizeExchange(exchange -> exchange
-                        .pathMatchers("/auth/**", "/register", "/login", "/user").permitAll()
+                        .pathMatchers("/auth/**", "/register", "/login").permitAll()
                         .anyExchange().permitAll()
                 )
                 .build();
@@ -29,10 +29,10 @@ public class SecurityConfig {
     @Bean
     public CorsWebFilter corsWebFilter() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        config.setAllowedOrigins(Arrays.asList("http://localhost:5173"));
-        config.setAllowedHeaders(Arrays.asList("*"));
-        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"));
+        config.setAllowCredentials(true); // Permitir envio de cookies (se necessário)
+        config.setAllowedOrigins(Arrays.asList("http://localhost:5173")); // origem do front-end
+        config.setAllowedHeaders(Arrays.asList("*")); // ou especifique "Authorization", "Content-Type"...
+        config.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "OPTIONS"));
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);

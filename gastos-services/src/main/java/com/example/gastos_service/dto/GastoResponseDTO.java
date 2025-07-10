@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,10 +17,9 @@ import java.util.UUID;
 public class GastoResponseDTO {
 
     private UUID id;
-    private boolean ativo;
     private String descricao;
     private BigDecimal valorTotal;
-    private LocalDateTime data;
+    private LocalDate data;
     private boolean parcelado;
     private Integer numeroParcelas;
     private String usuarioId;

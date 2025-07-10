@@ -1,12 +1,8 @@
 package com.example.categorias_services.service;
 
-import com.example.categorias_services.client.GastoClient;
 import com.example.categorias_services.dto.CategoriaRequestDTO;
 import com.example.categorias_services.dto.CategoriaResponseDTO;
 import com.example.categorias_services.entity.Categoria;
-import com.example.categorias_services.exception.CategoriaMembershipException;
-import com.example.categorias_services.exception.CategoriaNotBelongToUser;
-import com.example.categorias_services.exception.CategoriaNotFoundException;
 import com.example.categorias_services.repository.CategoriaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,8 +16,6 @@ import java.util.stream.Collectors;
 public class CategoriaService {
 
     private final CategoriaRepository categoriaRepository;
-    private final GastoClient gastoClient;
-    private final TokenService tokenService;
 
     public CategoriaResponseDTO criarCategoria(String usuarioEmail, CategoriaRequestDTO dto) {
         Categoria categoria = Categoria.builder()
@@ -43,10 +37,10 @@ public class CategoriaService {
 
     public CategoriaResponseDTO buscarPorId(UUID id, String usuarioEmail) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
 
         if (!categoria.getUsuarioId().equals(usuarioEmail)) {
-            throw new CategoriaNotBelongToUser("Categoria não pertence ao usuário");
+            throw new RuntimeException("Categoria não pertence ao usuário");
         }
 
         return toResponseDTO(categoria);
@@ -54,15 +48,10 @@ public class CategoriaService {
 
     public void deletar(UUID id, String usuarioEmail) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
 
         if (!categoria.getUsuarioId().equals(usuarioEmail)) {
-            throw new CategoriaNotBelongToUser("Categoria não pertence ao usuário");
-        }
-
-        String token = tokenService.getCurrentToken();
-        if (gastoClient.existeGastoComCategoria(id, token)) {
-            throw new CategoriaMembershipException("Não é possível excluir a categoria pois existem gastos associados a ela");
+            throw new RuntimeException("Categoria não pertence ao usuário");
         }
 
         categoriaRepository.deleteById(id);

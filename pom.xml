@@ -11,10 +11,10 @@
 
   <modules>
     <module>categorias-services</module>
-    <module>investimentos-service</module>
     <module>api-gateway</module>
     <module>login-auth-api</module>
     <module>gastos-services</module>
+    <module>divisao-service</module>
   </modules>
 
   <dependencyManagement>

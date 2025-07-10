@@ -32,7 +32,6 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.PUT, "/gastos/**").authenticated()
                         .requestMatchers(HttpMethod.DELETE, "/gastos/**").authenticated()
                         .requestMatchers(HttpMethod.GET, "/parcelas/**").authenticated()
-                        .requestMatchers(HttpMethod.PATCH, "/gastos/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
