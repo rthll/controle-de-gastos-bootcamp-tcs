@@ -1,4 +1,4 @@
-package com.controlegastos.investimentosservice.dto;
+package com.example.recuperar_senha_service.dto;
 
 public class ErroDTO {
     private String codigo;

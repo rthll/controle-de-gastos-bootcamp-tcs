@@ -1,4 +1,4 @@
-package com.controlegastos.investimentosservice.dto;
+package com.example.login_auth_api.dto;
 
 public class ErroDTO {
     private String codigo;
