@@ -176,7 +176,7 @@ public class GastoService {
                         return Stream.empty();
                     }
                 })
-                .filter(parcela -> parcela.getDataVencimento().isAfter(hoje))
+                .filter(parcela -> parcela.getDataVencimento().toLocalDate().isAfter(hoje))
                 .map(Parcela::getValorParcela)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
     }
