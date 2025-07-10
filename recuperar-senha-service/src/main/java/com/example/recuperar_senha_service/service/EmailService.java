@@ -1,5 +1,6 @@
 package com.example.recuperar_senha_service.service;
 
+import com.example.recuperar_senha_service.exception.MessageException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
@@ -107,7 +108,7 @@ public class EmailService {
 
         } catch (MessagingException e) {
             log.error("Erro ao enviar email para {}: {}", toEmail, e.getMessage());
-            throw new RuntimeException("Erro ao enviar email de recuperação", e);
+            throw new MessageException("Erro ao enviar email de recuperação");
         }
     }
 }
