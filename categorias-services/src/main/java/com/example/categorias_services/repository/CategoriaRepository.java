@@ -9,5 +9,5 @@ import java.util.UUID;
 public interface CategoriaRepository extends JpaRepository<Categoria, UUID> {
 
     List<Categoria> findByUsuarioId(String usuarioId);
-    Categoria findByNome(String nome);
+    Categoria findByNome(String nome, String usuarioId);
 }

@@ -28,6 +28,10 @@ public class PendenteService {
             throw new RuntimeException("Gasto não encontrado");
         }
 
+        if (pendenteRepository.findByIdGasto(idGasto)) {
+            throw new RuntimeException("Já existe uma pendência para este gasto");
+        }
+
         Pendente pendente = Pendente.builder()
                 .descricao(gasto.getDescricao())
                 .valorTotal(gasto.getValorTotal())
@@ -73,18 +77,19 @@ public class PendenteService {
         String token = tokenService.getCurrentToken();
 
         BigDecimal valor = pendencia.getValorTotal().subtract(pendencia.getValorDividido());
-        GastoDTO gastoUm = GastoDTO.builder()
-                .descricao(pendencia.getDescricao())
-                .valorTotal(valor)
-                .data(pendencia.getData())
-                .parcelado(false)
-                .numeroParcelas(1)
-                .usuarioId(pendencia.getUsuarioUmId())
-                .fonte(pendencia.getFonte())
-                .categoriaId(pendencia.getCategoriaId())
-                .build();
-        GastoDTO gastoDividido = gastoClient.divideGastos(gastoUm, token);
-
+        if (valor.compareTo(BigDecimal.ZERO) > 0) {
+            GastoDTO gastoUm = GastoDTO.builder()
+                    .descricao(pendencia.getDescricao())
+                    .valorTotal(valor)
+                    .data(pendencia.getData())
+                    .parcelado(false)
+                    .numeroParcelas(1)
+                    .usuarioId(pendencia.getUsuarioUmId())
+                    .fonte(pendencia.getFonte())
+                    .categoriaId(pendencia.getCategoriaId())
+                    .build();
+            GastoDTO gastoDividido = gastoClient.divideGastos(gastoUm, token);
+        }
 
         CategoriaDTO buscaCategoria = gastoClient.buscarCategoriaPorNome("Divisao", token);
         CategoriaDTO novaCategoria;
@@ -116,7 +121,6 @@ public class PendenteService {
         gastoClient.deletarGastoById(pendencia.getIdGasto());
 
         return DivisaoResponseDTO.builder()
-                .gastoUsuarioUm(gastoDividido)
                 .gastoUsuarioDois(gastoDivididoDois)
                 .build();
     }

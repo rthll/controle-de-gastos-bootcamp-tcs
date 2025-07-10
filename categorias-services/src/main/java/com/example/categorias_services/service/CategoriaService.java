@@ -77,8 +77,8 @@ public class CategoriaService {
                 .build();
     }
 
-    public CategoriaResponseDTO buscarPorNome(String nome) {
-        Categoria categoria = categoriaRepository.findByNome(nome);
+    public CategoriaResponseDTO buscarPorNome(String nome, String usuarioEmail) {
+        Categoria categoria = categoriaRepository.findByNome(nome, usuarioEmail);
         return toResponseDTO(categoria);
     }
 }

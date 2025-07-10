@@ -54,7 +54,9 @@ public class CategoriaController {
 
     @GetMapping("/nome/{nome}")
     public ResponseEntity<CategoriaResponseDTO> buscarPorNome(@PathVariable String nome) {
-        CategoriaResponseDTO categoria = categoriaService.buscarPorNome(nome);
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+        CategoriaResponseDTO categoria = categoriaService.buscarPorNome(nome, usuarioEmail);
         return ResponseEntity.ok(categoria);
     }
 }
