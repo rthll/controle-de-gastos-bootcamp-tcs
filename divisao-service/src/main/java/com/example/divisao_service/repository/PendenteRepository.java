@@ -9,4 +9,6 @@ import java.util.UUID;
 public interface PendenteRepository extends JpaRepository<Pendente, UUID> {
     List<Pendente> findByUsuarioDoisId(String usuarioDoisId);
     boolean findByIdGasto(UUID idGasto);
+
+    boolean existsByIdGasto(UUID idGasto);
 }

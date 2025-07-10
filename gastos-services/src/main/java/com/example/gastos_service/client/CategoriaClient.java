@@ -24,6 +24,7 @@ public class CategoriaClient {
     private String categoriaServiceUrl;
 
     public CategoriaDTO buscarCategoriaPorId(UUID categoriaId, String token) {
+        System.out.println(token);
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(token);

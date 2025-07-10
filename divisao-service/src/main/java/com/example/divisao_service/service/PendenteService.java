@@ -28,7 +28,7 @@ public class PendenteService {
             throw new RuntimeException("Gasto não encontrado");
         }
 
-        if (pendenteRepository.findByIdGasto(idGasto)) {
+        if (pendenteRepository.existsByIdGasto(idGasto)) {
             throw new RuntimeException("Já existe uma pendência para este gasto");
         }
 
