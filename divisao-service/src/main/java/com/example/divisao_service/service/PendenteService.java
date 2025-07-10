@@ -20,7 +20,7 @@ public class PendenteService {
     private final GastoClient gastoClient;
     private final TokenService tokenService; // Serviço para gerenciar tokens
 
-    public PendenteResponseDTO criarPendencia(String usuarioUmEmail, String usuarioDoisEmail, UUID idGasto ){
+    public PendenteResponseDTO criarPendencia(String usuarioUmEmail, String usuarioDoisEmail, UUID idGasto, BigDecimal valorDividido ){
 //        Buscar o gasto por ID
         String token = tokenService.getCurrentToken();
         GastoDTO gasto = gastoClient.gastoExiste(idGasto, token);
@@ -28,10 +28,10 @@ public class PendenteService {
             throw new RuntimeException("Gasto não encontrado");
         }
 
-        BigDecimal valorDividido = gasto.getValorTotal().divide(BigDecimal.valueOf(2));
         Pendente pendente = Pendente.builder()
                 .descricao(gasto.getDescricao())
-                .valorTotal(valorDividido)
+                .valorTotal(gasto.getValorTotal())
+                .valorDividido(valorDividido)
                 .data(gasto.getData())
                 .usuarioUmId(usuarioUmEmail) // <- associa o usuário que criou o gasto
                 .usuarioDoisId(usuarioDoisEmail) // <- associa ao usuario que dividira o gasto
@@ -49,6 +49,7 @@ public class PendenteService {
                 .id(pendente.getId())
                 .descricao(pendente.getDescricao())
                 .valorTotal(pendente.getValorTotal())
+                .valorDividido(pendente.getValorDividido())
                 .data(pendente.getData())
                 .usuarioUmId(pendente.getUsuarioUmId())
                 .usuarioDoisId(pendente.getUsuarioDoisId())
@@ -71,9 +72,10 @@ public class PendenteService {
 
         String token = tokenService.getCurrentToken();
 
+        BigDecimal valor = pendencia.getValorTotal().subtract(pendencia.getValorDividido());
         GastoDTO gastoUm = GastoDTO.builder()
                 .descricao(pendencia.getDescricao())
-                .valorTotal(pendencia.getValorTotal())
+                .valorTotal(valor)
                 .data(pendencia.getData())
                 .parcelado(false)
                 .numeroParcelas(1)
@@ -100,7 +102,7 @@ public class PendenteService {
 
         GastoDTO gastoDois = GastoDTO.builder()
                 .descricao(pendencia.getDescricao())
-                .valorTotal(pendencia.getValorTotal())
+                .valorTotal(pendencia.getValorDividido())
                 .data(pendencia.getData())
                 .parcelado(false)
                 .numeroParcelas(1)

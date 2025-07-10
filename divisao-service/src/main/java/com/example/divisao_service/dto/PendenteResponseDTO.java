@@ -21,6 +21,8 @@ public class PendenteResponseDTO {
 
     private BigDecimal valorTotal;
 
+    private BigDecimal valorDividido;
+
     private LocalDate data;
 
     //    ID DO USUARIO QUE CRIOU (INICIOU) A DIVISAO

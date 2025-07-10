@@ -26,7 +26,7 @@ public class DivisaoController {
     public ResponseEntity<PendenteResponseDTO> criarDivisao(@RequestBody PendenteRequestDTO request) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
-        PendenteResponseDTO response = pendenteService.criarPendencia(usuarioEmail, request.getUsuarioDoisId(), request.getIdGasto());
+        PendenteResponseDTO response = pendenteService.criarPendencia(usuarioEmail, request.getUsuarioDoisId(), request.getIdGasto(), request.getValorDividido());
         return ResponseEntity.ok(response);
     }
 
@@ -34,7 +34,6 @@ public class DivisaoController {
     public ResponseEntity<List<PendenteResponseDTO>> listarGastos() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
-
         List<PendenteResponseDTO> lista = pendenteService.listarPorUsuarioDois(usuarioEmail);
         return ResponseEntity.ok(lista);
     }
