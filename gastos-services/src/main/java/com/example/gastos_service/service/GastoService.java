@@ -26,6 +26,21 @@ public class GastoService {
     private final CategoriaClient categoriaClient;
     private final TokenService tokenService;
 
+    public List<GastoResponseDTO> listarPorUsuario(String usuarioEmail) {
+        return gastoRepository.findByUsuarioId(usuarioEmail)
+                .stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
+    public List<GastoResponseDTO> listarPorUsuarioComFiltroAtivo(String usuarioEmail, Boolean ativo) {
+        return gastoRepository.findByUsuarioId(usuarioEmail)
+                .stream()
+                .filter(gasto -> ativo == null || gasto.isAtivo() == ativo)
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     public GastoResponseDTO criarGasto(String usuarioEmail, GastoRequestDTO dto) {
         String token = tokenService.getCurrentToken();
         if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
@@ -127,13 +142,6 @@ public class GastoService {
 
         Gasto gastoSalvo = gastoRepository.save(gasto);
         return mapToResponseDTO(gastoSalvo);
-    }
-
-    public List<GastoResponseDTO> listarPorUsuario(String usuarioEmail) {
-        return gastoRepository.findByUsuarioId(usuarioEmail)
-                .stream()
-                .map(this::mapToResponseDTO)
-                .collect(Collectors.toList());
     }
 
     public BigDecimal calcularTotalGastosMesAtual(String usuarioEmail) {

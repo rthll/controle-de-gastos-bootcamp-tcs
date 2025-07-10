@@ -2,7 +2,6 @@ package com.example.gastos_service.controller;
 
 import com.example.gastos_service.dto.GastoRequestDTO;
 import com.example.gastos_service.dto.GastoResponseDTO;
-import com.example.gastos_service.entity.Gasto;
 import com.example.gastos_service.service.GastoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -15,7 +14,6 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/gastos")
@@ -80,11 +78,19 @@ public class GastoController {
     }
 
     @GetMapping
-    public ResponseEntity<List<GastoResponseDTO>> listarGastos() {
+    public ResponseEntity<List<GastoResponseDTO>> listarGastos(
+            @RequestParam(required = false) Boolean ativo) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
 
-        List<GastoResponseDTO> lista = gastoService.listarPorUsuario(usuarioEmail);
+        List<GastoResponseDTO> lista;
+
+        if (ativo != null) {
+            lista = gastoService.listarPorUsuarioComFiltroAtivo(usuarioEmail, ativo);
+        } else {
+            lista = gastoService.listarPorUsuario(usuarioEmail);
+        }
+
         return ResponseEntity.ok(lista);
     }
 
@@ -93,10 +99,16 @@ public class GastoController {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
 
-        List<GastoResponseDTO> lista = gastoService.listarPorUsuario(usuarioEmail)
-                .stream()
-                .filter(GastoResponseDTO::isAtivo)
-                .collect(Collectors.toList());
+        List<GastoResponseDTO> lista = gastoService.listarPorUsuarioComFiltroAtivo(usuarioEmail, true);
+        return ResponseEntity.ok(lista);
+    }
+
+    @GetMapping("/inativos")
+    public ResponseEntity<List<GastoResponseDTO>> listarGastosInativos() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+
+        List<GastoResponseDTO> lista = gastoService.listarPorUsuarioComFiltroAtivo(usuarioEmail, false);
         return ResponseEntity.ok(lista);
     }
 
@@ -162,5 +174,4 @@ public class GastoController {
             return ResponseEntity.notFound().build();
         }
     }
-
 }
