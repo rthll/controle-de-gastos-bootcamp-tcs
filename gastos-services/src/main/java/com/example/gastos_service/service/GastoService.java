@@ -327,6 +327,7 @@ public class GastoService {
                 .usuarioId(dto.getUsuarioId())
                 .fonte(dto.getFonte())
                 .categoriaId(dto.getCategoriaId())
+                .ativo(true)
                 .build();
 
         Gasto salvo = gastoRepository.save(gasto);
