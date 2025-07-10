@@ -6,7 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.UUID;
 
 @Data
@@ -18,5 +18,5 @@ public class ParcelaDTO {
     private UUID id;
     private Integer numeroParcela;
     private BigDecimal valorParcela;
-    private LocalDate dataVencimento;
+    private LocalDateTime dataVencimento;
 }

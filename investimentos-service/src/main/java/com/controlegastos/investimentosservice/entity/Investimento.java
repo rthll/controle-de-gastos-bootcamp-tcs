@@ -17,6 +17,8 @@ public class Investimento {
     private UUID id;
 
     private String titulo;
+    private String tipo;
+    private double taxaRendimentoMensal;
 
     @Temporal(TemporalType.DATE)
     private Date data;

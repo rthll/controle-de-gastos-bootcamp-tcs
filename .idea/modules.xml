@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ProjectModuleManager">
+    <modules>
+      <module fileurl="file://$PROJECT_DIR$/gastos-servicess/gastos-service (1) (com.example).iml" filepath="$PROJECT_DIR$/gastos-servicess/gastos-service (1) (com.example).iml" />
+      <module fileurl="file://$PROJECT_DIR$/investimentos-service/investimentos-service.iml" filepath="$PROJECT_DIR$/investimentos-service/investimentos-service.iml" />
+    </modules>
+  </component>
+</project>

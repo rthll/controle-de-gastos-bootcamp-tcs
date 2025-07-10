@@ -22,11 +22,14 @@
         <module name="categorias-services" />
         <module name="divisao-service" />
         <module name="login-auth-api" />
+        <module name="recuperar-senha-service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
       <module name="auth-service" target="1.8" />
       <module name="categorias-service" target="1.8" />
+      <module name="controle-gastos-pessoais" target="1.5" />
+      <module name="divisao-service" target="21" />
       <module name="gastos-service (1) (com.example)" target="21" />
     </bytecodeTargetLevel>
   </component>
@@ -38,6 +41,7 @@
       <module name="gastos-service" options="-parameters" />
       <module name="gastos-service (1) (com.example)" options="-parameters" />
       <module name="login-auth-api" options="-parameters" />
+      <module name="recuperar-senha-service" options="-parameters" />
     </option>
   </component>
 </project>
