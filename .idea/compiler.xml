@@ -27,6 +27,7 @@
     <bytecodeTargetLevel>
       <module name="auth-service" target="1.8" />
       <module name="categorias-service" target="1.8" />
+      <module name="controle-gastos-pessoais" target="1.5" />
       <module name="divisao-service" target="21" />
       <module name="gastos-service (1) (com.example)" target="21" />
     </bytecodeTargetLevel>

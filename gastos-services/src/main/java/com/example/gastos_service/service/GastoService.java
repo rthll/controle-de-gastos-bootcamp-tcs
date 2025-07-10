@@ -238,4 +238,49 @@ public class GastoService {
                 .filter(Gasto::isAtivo)
                 .anyMatch(gasto -> gasto.getCategoriaId().equals(categoriaId));
     }
+
+    public void excluirGastos(List<UUID> gastoIds, String emailUsuario) {
+        if (gastoIds == null || gastoIds.isEmpty()) {
+            throw new IllegalArgumentException("Lista de IDs não pode estar vazia");
+        }
+
+        List<Gasto> gastos = gastoRepository.findAllById(gastoIds);
+
+        if (gastos.size() != gastoIds.size()) {
+            throw new RuntimeException("Um ou mais gastos não foram encontrados");
+        }
+
+        List<Gasto> gastosNaoAutorizados = gastos.stream()
+                .filter(gasto -> !gasto.getUsuarioId().equals(emailUsuario))
+                .collect(Collectors.toList());
+
+        if (!gastosNaoAutorizados.isEmpty()) {
+            throw new RuntimeException("Você não tem permissão para excluir um ou mais gastos");
+        }
+
+        gastoRepository.deleteAll(gastos);
+    }
+
+    public void desativarGastos(List<UUID> gastoIds, String emailUsuario) {
+        if (gastoIds == null || gastoIds.isEmpty()) {
+            throw new IllegalArgumentException("Lista de IDs não pode estar vazia");
+        }
+
+        List<Gasto> gastos = gastoRepository.findAllById(gastoIds);
+
+        if (gastos.size() != gastoIds.size()) {
+            throw new RuntimeException("Um ou mais gastos não foram encontrados");
+        }
+
+        List<Gasto> gastosNaoAutorizados = gastos.stream()
+                .filter(gasto -> !gasto.getUsuarioId().equals(emailUsuario))
+                .collect(Collectors.toList());
+
+        if (!gastosNaoAutorizados.isEmpty()) {
+            throw new RuntimeException("Você não tem permissão para desativar um ou mais gastos");
+        }
+
+        gastos.forEach(gasto -> gasto.setAtivo(false));
+        gastoRepository.saveAll(gastos);
+    }
 }

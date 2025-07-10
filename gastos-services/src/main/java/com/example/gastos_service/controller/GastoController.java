@@ -9,6 +9,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.List;
@@ -131,4 +132,35 @@ public class GastoController {
         boolean existe = gastoService.existeGastoComCategoria(categoriaId, usuarioEmail);
         return ResponseEntity.ok(existe);
     }
+
+    @DeleteMapping
+    public ResponseEntity<Void> excluirGastos(@RequestBody List<UUID> gastoIds) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+
+        try {
+            gastoService.excluirGastos(gastoIds, usuarioEmail);
+            return ResponseEntity.noContent().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
+    @PatchMapping("/desativar-lote")
+    public ResponseEntity<Void> desativarGastos(@RequestBody List<UUID> gastoIds) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+
+        try {
+            gastoService.desativarGastos(gastoIds, usuarioEmail);
+            return ResponseEntity.ok().build();
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        } catch (RuntimeException e) {
+            return ResponseEntity.notFound().build();
+        }
+    }
+
 }
