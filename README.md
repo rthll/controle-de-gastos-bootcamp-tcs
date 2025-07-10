@@ -23,7 +23,6 @@ O objetivo do projeto é oferecer um sistema de controle de gastos e investiment
 - Spring Security (JWT) - Autenticação e segurança com tokens
 - Maven - Gerenciador de dependências e build
 - H2 Database - Banco de dados em memória para testes locais
-- Apache Kafka -  Comunicação assíncrona e troca de mensagens entre serviços
   
 ### Frontend
 - React - Biblioteca JavaScript para construção da interface do usuário
