@@ -4,6 +4,7 @@ import com.example.login_auth_api.domain.User.User;
 import com.example.login_auth_api.dto.EditRequestDTO;
 import com.example.login_auth_api.dto.LoginRequestDTO;
 import com.example.login_auth_api.dto.ResponseDTO;
+import com.example.login_auth_api.exception.UsuarioNotFoundException;
 import com.example.login_auth_api.repositories.UserRepository;
 import com.example.login_auth_api.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,6 +22,7 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserController {
     private final UserService userService;
+    private final UserRepository userRepository;
 
     @GetMapping
     public ResponseEntity<String> getUser(){
@@ -53,5 +55,13 @@ public class UserController {
             e.printStackTrace();
             return null;
         }
+    }
+
+    @GetMapping("/verifica/{email}")
+    public ResponseEntity<?> verificaCadastro(@PathVariable String email){
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado"));
+
+        return ResponseEntity.ok().build();
     }
 }

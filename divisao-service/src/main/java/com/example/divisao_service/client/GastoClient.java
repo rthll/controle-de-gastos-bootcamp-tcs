@@ -24,6 +24,9 @@ public class GastoClient {
     @Value("${services.categoria.url}")
     private String categoriaServiceUrl;
 
+    @Value("${services.user.url}")
+    private String userServiceUrl;
+
     public GastoDTO buscarGastoPorId(UUID gastoId, String token) {
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -133,6 +136,28 @@ public class GastoClient {
 
         } catch (Exception e) {
             log.error("Erro ao deletar gasto com ID: {}", idgasto, e);
+        }
+    }
+
+    public void buscarUsuarioPorEmail(String email, String token){
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            headers.setBearerAuth(token);
+            HttpEntity<String> entity = new HttpEntity<>(headers);
+
+            String url = userServiceUrl + "/user/verifica/" + email;
+
+            restTemplate.exchange(
+                    url,
+                    HttpMethod.GET,
+                    entity,
+                    void.class
+            );
+
+
+        } catch (Exception e) {
+            log.error("Não foi possivel encontrar o usuario: {}", email, e);
+            throw new RuntimeException("Usuario não encontrado");
         }
     }
 }

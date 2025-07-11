@@ -24,6 +24,8 @@ public class PendenteService {
 //        Buscar o gasto por ID
         String token = tokenService.getCurrentToken();
         GastoDTO gasto = gastoClient.gastoExiste(idGasto, token);
+
+        gastoClient.buscarUsuarioPorEmail(usuarioDoisEmail, token);
         if (gasto == null) {
             throw new RuntimeException("Gasto não encontrado");
         }
