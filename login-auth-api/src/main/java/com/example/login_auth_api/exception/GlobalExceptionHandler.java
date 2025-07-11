@@ -14,4 +14,10 @@ public class GlobalExceptionHandler {
         ErroDTO erro = new ErroDTO("USUARIO_NOT_EXISTS", ex.getMessage());
         return new ResponseEntity<>(erro, HttpStatus.BAD_REQUEST);
     }
+
+    @ExceptionHandler(InvalidPasswordException.class)
+    public ResponseEntity<ErroDTO> handleInvalidPasswordException(InvalidPasswordException ex) {
+        ErroDTO erro = new ErroDTO("INVALID_PASSWORD", ex.getMessage());
+        return new ResponseEntity<>(erro, HttpStatus.BAD_REQUEST);
+    }
 }

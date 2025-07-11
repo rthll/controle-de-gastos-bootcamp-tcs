@@ -7,6 +7,8 @@ import com.example.gastos_service.dto.GastoResponseDTO;
 import com.example.gastos_service.dto.ParcelaDTO;
 import com.example.gastos_service.entity.Gasto;
 import com.example.gastos_service.entity.Parcela;
+import com.example.gastos_service.exception.CategoriaNotFoundException;
+import com.example.gastos_service.exception.GastoNotFoundException;
 import com.example.gastos_service.repository.GastoRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -44,7 +46,7 @@ public class GastoService {
     public GastoResponseDTO criarGasto(String usuarioEmail, GastoRequestDTO dto) {
         String token = tokenService.getCurrentToken();
         if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
-            throw new RuntimeException("Categoria não encontrada");
+            throw new CategoriaNotFoundException("Categoria não encontrada");
         }
 
         Gasto gasto = Gasto.builder()
@@ -82,7 +84,7 @@ public class GastoService {
 
     public GastoResponseDTO alterarStatusAtivo(UUID gastoId, boolean novoStatus, String emailUsuario) {
         Gasto gasto = gastoRepository.findById(gastoId)
-                .orElseThrow(() -> new RuntimeException("Gasto não encontrado"));
+                .orElseThrow(() -> new GastoNotFoundException("Gasto não encontrado"));
 
         if (!gasto.getUsuarioId().equals(emailUsuario)) {
             throw new RuntimeException("Você não tem permissão para alterar este gasto.");
@@ -95,7 +97,7 @@ public class GastoService {
 
     public GastoResponseDTO editarGasto(UUID gastoId, GastoRequestDTO dto, String emailUsuario) {
         Gasto gasto = gastoRepository.findById(gastoId)
-                .orElseThrow(() -> new RuntimeException("Gasto não encontrado"));
+                .orElseThrow(() -> new GastoNotFoundException("Gasto não encontrado"));
 
         if (!gasto.getUsuarioId().equals(emailUsuario)) {
             throw new RuntimeException("Você não tem permissão para editar este gasto.");
@@ -103,7 +105,7 @@ public class GastoService {
 
         String token = tokenService.getCurrentToken();
         if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
-            throw new RuntimeException("Categoria não encontrada");
+            throw new CategoriaNotFoundException("Categoria não encontrada");
         }
 
         gasto.setDescricao(dto.getDescricao());
@@ -255,7 +257,7 @@ public class GastoService {
         List<Gasto> gastos = gastoRepository.findAllById(gastoIds);
 
         if (gastos.size() != gastoIds.size()) {
-            throw new RuntimeException("Um ou mais gastos não foram encontrados");
+            throw new GastoNotFoundException("Um ou mais gastos não foram encontrados");
         }
 
         List<Gasto> gastosNaoAutorizados = gastos.stream()
@@ -277,7 +279,7 @@ public class GastoService {
         List<Gasto> gastos = gastoRepository.findAllById(gastoIds);
 
         if (gastos.size() != gastoIds.size()) {
-            throw new RuntimeException("Um ou mais gastos não foram encontrados");
+            throw new GastoNotFoundException("Um ou mais gastos não foram encontrados");
         }
 
         List<Gasto> gastosNaoAutorizados = gastos.stream()
@@ -294,7 +296,7 @@ public class GastoService {
 
     public GastoResponseDTO buscarPorId(UUID id, String usuarioEmail) {
         Gasto gasto = gastoRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Gasto não encontrada"));
+                .orElseThrow(() -> new GastoNotFoundException("Gasto não encontrada"));
 
         if (!gasto.getUsuarioId().equals(usuarioEmail)) {
             throw new RuntimeException("Gasto não pertence ao usuário");
