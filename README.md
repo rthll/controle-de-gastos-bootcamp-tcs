@@ -85,7 +85,7 @@ http://localhost:5173
 - `gastos-services`: Registro e consulta de gastos
 - `investimentos-service`: Controle de investimentos
 - `categorias-services`: CRUD de categorias
-- - `relatorio-services`: Exportação de relatórios filtrados (pdf ou excel)
+- `relatorio-services`: Exportação de relatórios filtrados (pdf ou excel)
 
 ## 🔐 Segurança
 
