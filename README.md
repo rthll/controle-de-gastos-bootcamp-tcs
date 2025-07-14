@@ -22,10 +22,13 @@ O objetivo do projeto é oferecer um sistema de controle de gastos e investiment
 - Spring Boot - Framework para criação de APIs REST
 - Spring Security (JWT) - Autenticação e segurança com tokens
 - Maven - Gerenciador de dependências e build
-- H2 Database - Banco de dados em memória para testes locais
   
 ### Frontend
 - React - Biblioteca JavaScript para construção da interface do usuário
+
+### Bando de Dados
+- H2 Database - Banco de dados em memória para testes locais
+- JPA + Hibernate
 
 ## 🔧 Como Executar o Software
 
