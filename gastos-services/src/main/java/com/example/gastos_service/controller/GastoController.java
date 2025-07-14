@@ -47,7 +47,7 @@ public class GastoController {
         return ResponseEntity.ok(response);
     }
 
-    @PutMapping("/{gastoId}")
+    @PatchMapping("/{gastoId}")
     public ResponseEntity<GastoResponseDTO> editarGasto(
             @PathVariable UUID gastoId,
             @RequestBody GastoRequestDTO dto) {
