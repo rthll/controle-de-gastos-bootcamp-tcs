@@ -1,0 +1,89 @@
+# Pode remover a linha abaixo, pois a versão é obsoleta
+# version: '3.8'
+
+services:
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    environment:
+      POSTGRES_DB: users_db
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 2701
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    networks:
+      - backend
+
+  login-auth:
+    build: ./login-auth-api
+    container_name: login-auth-api
+    ports:
+      - "8081:8081"
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  api-gateway:
+    build: ./api-gateway
+    container_name: api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - login-auth
+      - categorias-services
+      - gastos-services
+      - recuperar-senha-service
+      - divisao-service
+    networks:
+      - backend
+
+  categorias-services:
+    build: ./categorias-services
+    container_name: categorias-services
+    ports:
+      - "8083:8083"
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  gastos-services:
+    build: ./gastos-services
+    container_name: gastos-services
+    ports:
+      - "8082:8082"
+    depends_on:
+      - postgres
+      - categorias-services
+    networks:
+      - backend
+
+  recuperar-senha-service:
+    build: ./recuperar-senha-service
+    container_name: recuperar-senha-service
+    ports:
+      - "8085:8085"
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+  divisao-service:
+    build: ./divisao-service
+    container_name: divisao-service
+    ports:
+      - "8086:8086"
+    depends_on:
+      - postgres
+    networks:
+      - backend
+
+volumes:
+  pgdata:
+
+networks:
+  backend:
+    driver: bridge
