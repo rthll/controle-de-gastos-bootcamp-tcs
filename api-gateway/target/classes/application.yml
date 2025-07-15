@@ -76,6 +76,15 @@ spring:
           filters:
             - PreserveHostHeader
             - RemoveRequestHeader=Cookie
+
+        - id: relatorios-service
+          uri: http://localhost:8087
+          predicates:
+            - Path=/relatorios/**
+          filters:
+            - PreserveHostHeader
+            - RemoveRequestHeader=Cookie
+
       default-filters:
         - AddResponseHeader=X-Gateway, ControleGastosAPI
 
