@@ -9,5 +9,6 @@
     <file url="file://$PROJECT_DIR$/gastos-servicess/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/login-auth-api/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/recuperar-senha-service/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/relatorios-service/src/main/java" charset="UTF-8" />
   </component>
 </project>
