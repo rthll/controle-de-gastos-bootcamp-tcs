@@ -8,7 +8,7 @@
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
         <module name="api-gateway" />
-        <module name="investimentos-service" />
+        <module name="relatorio-service" />
       </profile>
       <profile name="Annotation profile for controle-gastos-pessoais" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
@@ -29,6 +29,7 @@
       <module name="auth-service" target="1.8" />
       <module name="categorias-service" target="1.8" />
       <module name="gastos-service (1) (com.example)" target="21" />
+      <module name="investimentos-service" target="1.8" />
     </bytecodeTargetLevel>
   </component>
   <component name="JavacSettings">
@@ -40,6 +41,7 @@
       <module name="gastos-service (1) (com.example)" options="-parameters" />
       <module name="login-auth-api" options="-parameters" />
       <module name="recuperar-senha-service" options="-parameters" />
+      <module name="relatorio-service" options="-parameters" />
     </option>
   </component>
 </project>

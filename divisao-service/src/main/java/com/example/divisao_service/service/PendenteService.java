@@ -25,7 +25,9 @@ public class PendenteService {
         String token = tokenService.getCurrentToken();
         GastoDTO gasto = gastoClient.gastoExiste(idGasto, token);
 
+//        Checando se o usuario 2 esta cadastrado
         gastoClient.buscarUsuarioPorEmail(usuarioDoisEmail, token);
+
         if (gasto == null) {
             throw new RuntimeException("Gasto não encontrado");
         }
@@ -78,8 +80,11 @@ public class PendenteService {
 
         String token = tokenService.getCurrentToken();
 
+        GastoDTO gasto = gastoClient.gastoExiste(pendencia.getIdGasto(), token);
+
         BigDecimal valor = pendencia.getValorTotal().subtract(pendencia.getValorDividido());
         if (valor.compareTo(BigDecimal.ZERO) > 0) {
+//            Fazer update no valor do gasto e não criar um novo (pegar pelo idGasto da pendencia)
             GastoDTO gastoUm = GastoDTO.builder()
                     .descricao(pendencia.getDescricao())
                     .valorTotal(valor)

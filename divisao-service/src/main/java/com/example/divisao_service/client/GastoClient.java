@@ -9,6 +9,9 @@ import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
+import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @Component
@@ -51,6 +54,30 @@ public class GastoClient {
 
     public GastoDTO gastoExiste(UUID gastoId, String token) {
         return buscarGastoPorId(gastoId, token);
+    }
+
+    public GastoDTO atualizaGasto(UUID idGasto, BigDecimal valor){
+        try {
+            HttpHeaders headers = new HttpHeaders();
+            Map<String, Object> payload = new HashMap<>();
+            payload.put("id", idGasto);
+            payload.put("valor", valor);
+            HttpEntity<Map<String, Object>> entity = new HttpEntity<>(payload, headers);
+
+            String url = gastoServiceUrl + "/gastos/divisao";
+
+            ResponseEntity<GastoDTO> response = restTemplate.exchange(
+                    url,
+                    HttpMethod.PATCH,
+                    entity,
+                    GastoDTO.class
+            );
+
+            return response.getBody();
+        } catch (Exception e) {
+            log.error("Erro ao buscar ERRO AQUI categoria com ID: {}", idGasto, e);
+            return null;
+        }
     }
 
     public GastoDTO divideGastos(GastoDTO gasto, String token){
