@@ -13,7 +13,7 @@ import java.util.UUID;
 @Builder
 public class CategoriaDTO {
 
-    private UUID id;
+    private Long id;
     private String nome;
     private String descricao;
     private String usuarioId;

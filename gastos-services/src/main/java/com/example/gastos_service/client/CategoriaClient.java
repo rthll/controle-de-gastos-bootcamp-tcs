@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -23,7 +22,7 @@ public class CategoriaClient {
     @Value("${services.categoria.url}")
     private String categoriaServiceUrl;
 
-    public CategoriaDTO buscarCategoriaPorId(UUID categoriaId, String token) {
+    public CategoriaDTO buscarCategoriaPorId(Long categoriaId, String token) {
         System.out.println(token);
         try {
             HttpHeaders headers = new HttpHeaders();
@@ -46,7 +45,7 @@ public class CategoriaClient {
         }
     }
 
-    public boolean categoriaExiste(UUID categoriaId, String token) {
+    public boolean categoriaExiste(Long categoriaId, String token) {
         CategoriaDTO categoria = buscarCategoriaPorId(categoriaId, token);
         return categoria != null;
     }

@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 public class GastoResponseDTO {
 
-    private UUID id;
+    private Long id;
     private boolean ativo;
     private String descricao;
     private BigDecimal valorTotal;
@@ -25,7 +25,7 @@ public class GastoResponseDTO {
     private Integer numeroParcelas;
     private String usuarioId;
     private String fonte;
-    private UUID categoriaId;
+    private Long categoriaId;
     private CategoriaDTO categoria;
 
     private List<ParcelaDTO> parcelas;

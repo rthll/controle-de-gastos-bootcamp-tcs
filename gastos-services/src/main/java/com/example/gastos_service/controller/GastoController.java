@@ -8,12 +8,10 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
 import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 @RestController
 @RequestMapping("/gastos")
@@ -32,7 +30,7 @@ public class GastoController {
 
     @PatchMapping("/{gastoId}/status")
     public ResponseEntity<GastoResponseDTO> alterarStatusAtivo(
-            @PathVariable UUID gastoId,
+            @PathVariable Long gastoId,
             @RequestBody Map<String, Boolean> request) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -49,7 +47,7 @@ public class GastoController {
 
     @PatchMapping("/{gastoId}")
     public ResponseEntity<GastoResponseDTO> editarGasto(
-            @PathVariable UUID gastoId,
+            @PathVariable Long gastoId,
             @RequestBody GastoRequestDTO dto) {
 
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
@@ -60,7 +58,7 @@ public class GastoController {
     }
 
     @PatchMapping("/{gastoId}/ativar")
-    public ResponseEntity<GastoResponseDTO> ativarGasto(@PathVariable UUID gastoId) {
+    public ResponseEntity<GastoResponseDTO> ativarGasto(@PathVariable Long gastoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
 
@@ -69,7 +67,7 @@ public class GastoController {
     }
 
     @PatchMapping("/{gastoId}/desativar")
-    public ResponseEntity<GastoResponseDTO> desativarGasto(@PathVariable UUID gastoId) {
+    public ResponseEntity<GastoResponseDTO> desativarGasto(@PathVariable Long gastoId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
 
@@ -137,7 +135,7 @@ public class GastoController {
     }
 
     @GetMapping("/existe-categoria/{categoriaId}")
-    public ResponseEntity<Boolean> existeGastoComCategoria(@PathVariable UUID categoriaId) {
+    public ResponseEntity<Boolean> existeGastoComCategoria(@PathVariable Long categoriaId) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
 
@@ -146,7 +144,7 @@ public class GastoController {
     }
 
     @DeleteMapping
-    public ResponseEntity<Void> excluirGastos(@RequestBody List<UUID> gastoIds) {
+    public ResponseEntity<Void> excluirGastos(@RequestBody List<Long> gastoIds) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
 
@@ -161,7 +159,7 @@ public class GastoController {
     }
 
     @PatchMapping("/desativar-lote")
-    public ResponseEntity<Void> desativarGastos(@RequestBody List<UUID> gastoIds) {
+    public ResponseEntity<Void> desativarGastos(@RequestBody List<Long> gastoIds) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
 
@@ -176,7 +174,7 @@ public class GastoController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<GastoResponseDTO> buscarPorId(@PathVariable UUID id) {
+    public ResponseEntity<GastoResponseDTO> buscarPorId(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         String usuarioEmail = authentication.getName();
         GastoResponseDTO categoria = gastoService.buscarPorId(id, usuarioEmail);
@@ -190,7 +188,7 @@ public class GastoController {
     }
 
     @DeleteMapping("/divisao/{idgasto}")
-    public void deletarGastoById(@PathVariable UUID idgasto){
+    public void deletarGastoById(@PathVariable Long idgasto){
         gastoService.deletById(idgasto);
     }
 

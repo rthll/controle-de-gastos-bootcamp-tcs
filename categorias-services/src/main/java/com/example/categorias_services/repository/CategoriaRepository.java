@@ -6,7 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 import java.util.UUID;
 
-public interface CategoriaRepository extends JpaRepository<Categoria, UUID> {
+public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
 
     List<Categoria> findByUsuarioId(String usuarioId);
     Categoria findByNomeAndUsuarioId(String nome, String usuarioId);

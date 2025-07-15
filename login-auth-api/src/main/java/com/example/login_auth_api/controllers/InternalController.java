@@ -20,7 +20,7 @@ public class InternalController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public record UserDTO(String id, String name, String email) {}
+    public record UserDTO(Long id, String name, String email) {}
     public record PasswordUpdateRequest(String email, String newPassword) {}
 
 

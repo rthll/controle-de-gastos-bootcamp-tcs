@@ -15,13 +15,13 @@ import java.util.UUID;
 @Builder
 public class GastoRequestDTO {
 
-    private UUID id;
+    private Long id;
     private String descricao;
     private BigDecimal valorTotal;
     private LocalDateTime data;
     private boolean parcelado;
     private Integer numeroParcelas;
     private String fonte;
-    private UUID categoriaId;
+    private Long categoriaId;
     private String usuarioId;
 }

@@ -10,9 +10,7 @@ import com.example.categorias_services.exception.CategoriaNotFoundException;
 import com.example.categorias_services.repository.CategoriaRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -41,7 +39,7 @@ public class CategoriaService {
                 .collect(Collectors.toList());
     }
 
-    public CategoriaResponseDTO buscarPorId(UUID id, String usuarioEmail) {
+    public CategoriaResponseDTO buscarPorId(Long id, String usuarioEmail) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));
 
@@ -52,7 +50,7 @@ public class CategoriaService {
         return toResponseDTO(categoria);
     }
 
-    public void deletar(UUID id, String usuarioEmail) {
+    public void deletar(Long id, String usuarioEmail) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));
 

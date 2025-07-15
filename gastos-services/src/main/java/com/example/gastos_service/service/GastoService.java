@@ -82,7 +82,7 @@ public class GastoService {
         return mapToResponseDTO(salvo);
     }
 
-    public GastoResponseDTO alterarStatusAtivo(UUID gastoId, boolean novoStatus, String emailUsuario) {
+    public GastoResponseDTO alterarStatusAtivo(Long gastoId, boolean novoStatus, String emailUsuario) {
         Gasto gasto = gastoRepository.findById(gastoId)
                 .orElseThrow(() -> new GastoNotFoundException("Gasto não encontrado"));
 
@@ -95,7 +95,7 @@ public class GastoService {
         return mapToResponseDTO(gastoSalvo);
     }
 
-    public GastoResponseDTO editarGasto(UUID gastoId, GastoRequestDTO dto, String emailUsuario) {
+    public GastoResponseDTO editarGasto(Long gastoId, GastoRequestDTO dto, String emailUsuario) {
         Gasto gasto = gastoRepository.findById(gastoId)
                 .orElseThrow(() -> new GastoNotFoundException("Gasto não encontrado"));
 
@@ -242,14 +242,14 @@ public class GastoService {
                 .build();
     }
 
-    public boolean existeGastoComCategoria(UUID categoriaId, String usuarioEmail) {
+    public boolean existeGastoComCategoria(Long categoriaId, String usuarioEmail) {
         return gastoRepository.findByUsuarioId(usuarioEmail)
                 .stream()
                 .filter(Gasto::isAtivo)
                 .anyMatch(gasto -> gasto.getCategoriaId().equals(categoriaId));
     }
 
-    public void excluirGastos(List<UUID> gastoIds, String emailUsuario) {
+    public void excluirGastos(List<Long> gastoIds, String emailUsuario) {
         if (gastoIds == null || gastoIds.isEmpty()) {
             throw new IllegalArgumentException("Lista de IDs não pode estar vazia");
         }
@@ -271,7 +271,7 @@ public class GastoService {
         gastoRepository.deleteAll(gastos);
     }
 
-    public void desativarGastos(List<UUID> gastoIds, String emailUsuario) {
+    public void desativarGastos(List<Long> gastoIds, String emailUsuario) {
         if (gastoIds == null || gastoIds.isEmpty()) {
             throw new IllegalArgumentException("Lista de IDs não pode estar vazia");
         }
@@ -294,7 +294,7 @@ public class GastoService {
         gastoRepository.saveAll(gastos);
     }
 
-    public GastoResponseDTO buscarPorId(UUID id, String usuarioEmail) {
+    public GastoResponseDTO buscarPorId(Long id, String usuarioEmail) {
         Gasto gasto = gastoRepository.findById(id)
                 .orElseThrow(() -> new GastoNotFoundException("Gasto não encontrada"));
 
@@ -336,7 +336,7 @@ public class GastoService {
         return mapToResponseDTO(salvo);
     }
 
-    public void deletById(UUID id){
+    public void deletById(Long id){
         gastoRepository.deleteById(id);
     }
 }
