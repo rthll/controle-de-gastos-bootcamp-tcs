@@ -8,11 +8,9 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
-
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -30,7 +28,7 @@ public class GastoClient {
     @Value("${services.user.url}")
     private String userServiceUrl;
 
-    public GastoDTO buscarGastoPorId(UUID gastoId, String token) {
+    public GastoDTO buscarGastoPorId(Long gastoId, String token) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(token);
@@ -52,11 +50,11 @@ public class GastoClient {
         }
     }
 
-    public GastoDTO gastoExiste(UUID gastoId, String token) {
+    public GastoDTO gastoExiste(Long gastoId, String token) {
         return buscarGastoPorId(gastoId, token);
     }
 
-    public GastoDTO atualizaGasto(UUID idGasto, BigDecimal valor){
+    public GastoDTO atualizaGasto(Long idGasto, BigDecimal valor){
         try {
             HttpHeaders headers = new HttpHeaders();
             Map<String, Object> payload = new HashMap<>();
@@ -147,7 +145,7 @@ public class GastoClient {
         }
     }
 
-    public void deletarGastoById(UUID idgasto){
+    public void deletarGastoById(Long idgasto){
         try {
             HttpHeaders headers = new HttpHeaders();
             HttpEntity<String> entity = new HttpEntity<>(headers);

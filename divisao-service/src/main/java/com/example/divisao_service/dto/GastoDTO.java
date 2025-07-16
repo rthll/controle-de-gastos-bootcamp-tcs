@@ -4,11 +4,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
+
 
 @Data
 @NoArgsConstructor
@@ -16,7 +14,7 @@ import java.util.UUID;
 @Builder
 public class GastoDTO {
 
-    private UUID id;
+    private Long id;
     private String descricao;
     private BigDecimal valorTotal;
     private LocalDateTime data;
@@ -24,6 +22,6 @@ public class GastoDTO {
     private Integer numeroParcelas;
     private String usuarioId;
     private String fonte;
-    private UUID categoriaId;
+    private Long categoriaId;
 
 }

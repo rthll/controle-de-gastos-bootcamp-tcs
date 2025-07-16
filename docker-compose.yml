@@ -1,6 +1,3 @@
-# Pode remover a linha abaixo, pois a versão é obsoleta
-# version: '3.8'
-
 services:
   postgres:
     image: postgres:15

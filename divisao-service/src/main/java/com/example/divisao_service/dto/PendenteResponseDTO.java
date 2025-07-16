@@ -16,7 +16,7 @@ import java.util.UUID;
 @Builder
 public class PendenteResponseDTO {
 
-    private UUID id;
+    private Long id;
 
     private String descricao;
 
@@ -26,14 +26,13 @@ public class PendenteResponseDTO {
 
     private LocalDateTime data;
 
-    //    ID DO USUARIO QUE CRIOU (INICIOU) A DIVISAO
     private String usuarioUmId;
-    //    ID DO USUARIO INSERIDO PELO USUARIO INICIAL
+
     private String usuarioDoisId;
 
-    private UUID idGasto;
+    private Long idGasto;
 
     private String fonte;
 
-    private UUID categoriaId;
+    private Long categoriaId;
 }

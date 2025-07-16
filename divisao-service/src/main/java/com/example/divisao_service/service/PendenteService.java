@@ -6,10 +6,8 @@ import com.example.divisao_service.entity.Pendente;
 import com.example.divisao_service.repository.PendenteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
 import java.math.BigDecimal;
 import java.util.List;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Service
@@ -20,12 +18,10 @@ public class PendenteService {
     private final GastoClient gastoClient;
     private final TokenService tokenService; // Serviço para gerenciar tokens
 
-    public PendenteResponseDTO criarPendencia(String usuarioUmEmail, String usuarioDoisEmail, UUID idGasto, BigDecimal valorDividido ){
-//        Buscar o gasto por ID
+    public PendenteResponseDTO criarPendencia(String usuarioUmEmail, String usuarioDoisEmail, Long idGasto, BigDecimal valorDividido ){
         String token = tokenService.getCurrentToken();
         GastoDTO gasto = gastoClient.gastoExiste(idGasto, token);
 
-//        Checando se o usuario 2 esta cadastrado
         gastoClient.buscarUsuarioPorEmail(usuarioDoisEmail, token);
 
         if (gasto == null) {
@@ -74,7 +70,7 @@ public class PendenteService {
                 .collect(Collectors.toList());
     }
 
-    public DivisaoResponseDTO aceitaDivisao(UUID id) {
+    public DivisaoResponseDTO aceitaDivisao(Long id) {
         Pendente pendencia = pendenteRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Pendencia não encontrada"));
 
@@ -132,7 +128,7 @@ public class PendenteService {
                 .build();
     }
 
-    public void recusaDivisao(UUID id) {
+    public void recusaDivisao(Long id) {
         pendenteRepository.deleteById(id);
     }
 }

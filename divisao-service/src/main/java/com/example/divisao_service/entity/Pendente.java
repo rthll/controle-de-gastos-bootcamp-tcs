@@ -5,11 +5,8 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.UUID;
 
 @Entity
 @Table(name = "pendente")
@@ -20,8 +17,8 @@ import java.util.UUID;
 public class Pendente {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
-    private UUID id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     private String descricao;
 
@@ -31,14 +28,13 @@ public class Pendente {
 
     private LocalDateTime data;
 
-//    ID DO USUARIO QUE CRIOU (INICIOU) A DIVISAO
     private String usuarioUmId;
-//    ID DO USUARIO INSERIDO PELO USUARIO INICIAL
+
     private String usuarioDoisId;
-//    Necessario o idGasto para saber qual gasto excluir ao ser confirmado
-    private UUID idGasto;
+
+    private Long idGasto;
 
     private String fonte;
 
-    private UUID categoriaId;
+    private Long categoriaId;
 }
