@@ -1,6 +1,7 @@
 package com.example.setor_service.config;
 
-import com.example.categorias_services.security.JwtAuthenticationFilter;
+
+import com.example.setor_service.security.JwtAuthenticationFilter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -25,10 +26,10 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/categorias/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/categorias/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/categorias/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/categorias/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/setores/**").authenticated()
+                        .requestMatchers(HttpMethod.POST, "/setores/**").authenticated()
+                        .requestMatchers(HttpMethod.PUT, "/setores/**").authenticated()
+                        .requestMatchers(HttpMethod.DELETE, "/setores/**").authenticated()
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);

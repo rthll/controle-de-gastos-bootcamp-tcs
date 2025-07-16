@@ -67,10 +67,5 @@ public class SetorController {
         setorService.deletar(id, usuarioEmail);
         return ResponseEntity.noContent().build();
     }
-
-
-
-
-
 }
 

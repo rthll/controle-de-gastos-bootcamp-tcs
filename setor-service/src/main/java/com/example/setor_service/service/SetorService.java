@@ -1,12 +1,12 @@
 package com.example.setor_service.service;
 
-import com.example.categorias_services.dto.CategoriaRequestDTO;
-import com.example.categorias_services.dto.CategoriaResponseDTO;
-import com.example.categorias_services.entity.Categoria;
-import com.example.categorias_services.service.TokenService;
+import com.example.setor_service.client.FuncionarioClient;
 import com.example.setor_service.dto.SetorRequestDTO;
 import com.example.setor_service.dto.SetorResponseDTO;
 import com.example.setor_service.entity.Setor;
+import com.example.setor_service.exception.SetorMembershipException;
+import com.example.setor_service.exception.SetorNotBelongToUser;
+import com.example.setor_service.exception.SetorNotFoundException;
 import com.example.setor_service.repository.SetorRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,6 +20,7 @@ public class SetorService {
 
     private final SetorRepository setorRepository;
     private final TokenService tokenService;
+    private final FuncionarioClient funcionarioClient;
 
     public SetorResponseDTO criarSetor(String usuarioEmail, SetorRequestDTO dto) {
         if (setorRepository.existsByNomeAndUsuarioId(dto.getNome(), usuarioEmail)) {
@@ -44,10 +45,10 @@ public class SetorService {
 
     public SetorResponseDTO buscarPorId(Long id, String usuarioEmail) {
         Setor setor = setorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Setor não encontrado"));
+                .orElseThrow(() -> new SetorNotFoundException("Setor não encontrado"));
 
         if (!setor.getUsuarioId().equals(usuarioEmail)) {
-            throw new RuntimeException("Setor não pertence ao usuário");
+            throw new SetorNotBelongToUser("Setor não pertence ao usuário");
         }
 
         return toResponseDTO(setor);
@@ -55,13 +56,13 @@ public class SetorService {
 
     public SetorResponseDTO buscarPorNome(String nome, String usuarioEmail){
         Setor setor = setorRepository.findByNomeAndUsuarioId(nome, usuarioEmail)
-                .orElseThrow(() -> new RuntimeException("Setor não encontrado"));
+                .orElseThrow(() -> new SetorNotFoundException("Setor não encontrado"));
         return toResponseDTO(setor);
     }
 
     public SetorResponseDTO atualizarSetor(Long id, String usuarioEmail, SetorRequestDTO dto) {
         Setor setor = setorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Setor não encontrado"));
+                .orElseThrow(() -> new SetorNotFoundException("Setor não encontrado"));
 
         if (!setor.getUsuarioId().equals(usuarioEmail)) {
             throw new RuntimeException("Setor não pertence ao usuário");
@@ -75,11 +76,17 @@ public class SetorService {
 
     public void deletar(Long id, String usuarioEmail) {
         Setor setor = setorRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Setor não encontrado"));
+                .orElseThrow(() -> new SetorNotFoundException("Setor não encontrado"));
 
         if (!setor.getUsuarioId().equals(usuarioEmail)) {
-            throw new RuntimeException("Setor não pertence ao usuário");
+            throw new SetorNotBelongToUser("Setor não pertence ao usuário");
         }
+
+        String token = tokenService.getCurrentToken();
+        if (funcionarioClient.existeFuncionarioComSetor(id, token)) {
+            throw new SetorMembershipException("Não é possível excluir o setor pois existem funcionário associados a ele");
+        }
+
         setorRepository.deleteById(id);
     }
 
