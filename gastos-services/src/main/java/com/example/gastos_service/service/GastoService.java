@@ -294,13 +294,9 @@ public class GastoService {
         gastoRepository.saveAll(gastos);
     }
 
-    public GastoResponseDTO buscarPorId(Long id, String usuarioEmail) {
+    public GastoResponseDTO buscarPorId(Long id) {
         Gasto gasto = gastoRepository.findById(id)
                 .orElseThrow(() -> new GastoNotFoundException("Gasto não encontrada"));
-
-        if (!gasto.getUsuarioId().equals(usuarioEmail)) {
-            throw new RuntimeException("Gasto não pertence ao usuário");
-        }
 
         return toResponseDTO(gasto);
     }
@@ -339,4 +335,13 @@ public class GastoService {
     public void deletById(Long id){
         gastoRepository.deleteById(id);
     }
+
+    public void atualizarValor(Long gastoId, BigDecimal valor) {
+        Gasto gasto = gastoRepository.findById(gastoId)
+                .orElseThrow(() -> new RuntimeException("Gasto não encontrado"));
+
+        gasto.setValorTotal(valor);
+        gastoRepository.save(gasto);
+    }
+
 }

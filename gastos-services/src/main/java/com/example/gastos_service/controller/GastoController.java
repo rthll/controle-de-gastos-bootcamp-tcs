@@ -12,6 +12,7 @@ import java.math.BigDecimal;
 import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/gastos")
@@ -173,11 +174,9 @@ public class GastoController {
         }
     }
 
-    @GetMapping("/{id}")
+    @GetMapping("/divisao/{id}")
     public ResponseEntity<GastoResponseDTO> buscarPorId(@PathVariable Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        String usuarioEmail = authentication.getName();
-        GastoResponseDTO categoria = gastoService.buscarPorId(id, usuarioEmail);
+        GastoResponseDTO categoria = gastoService.buscarPorId(id);
         return ResponseEntity.ok(categoria);
     }
 
@@ -190,6 +189,15 @@ public class GastoController {
     @DeleteMapping("/divisao/{idgasto}")
     public void deletarGastoById(@PathVariable Long idgasto){
         gastoService.deletById(idgasto);
+    }
+
+    @PutMapping("/divisao")
+    public ResponseEntity<Void> atualizarValor(@RequestBody Map<String, Object> payload) {
+        Long id = Long.parseLong(payload.get("id").toString());
+        BigDecimal valor = new BigDecimal(payload.get("valor").toString());
+
+        gastoService.atualizarValor(id, valor);
+        return ResponseEntity.ok().build();
     }
 
 }
