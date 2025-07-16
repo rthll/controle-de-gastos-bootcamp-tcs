@@ -3,6 +3,7 @@ package com.example.divisao_service.controller;
 import com.example.divisao_service.dto.DivisaoResponseDTO;
 import com.example.divisao_service.dto.PendenteRequestDTO;
 import com.example.divisao_service.dto.PendenteResponseDTO;
+import com.example.divisao_service.entity.GastosDivididos;
 import com.example.divisao_service.service.PendenteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -52,5 +53,9 @@ public class DivisaoController {
         pendenteService.recusaDivisao(request.getId());
     }
 
+    @GetMapping("/listar/{idgasto}")
+    public List<GastosDivididos> listarDivididos(@PathVariable Long idgasto){
+        return pendenteService.listaUsuariosDivididos(idgasto);
+    }
 
 }

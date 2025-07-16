@@ -8,9 +8,11 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+
 import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.UUID;
 
 @Component
 @RequiredArgsConstructor
@@ -28,13 +30,12 @@ public class GastoClient {
     @Value("${services.user.url}")
     private String userServiceUrl;
 
-    public GastoDTO buscarGastoPorId(Long gastoId, String token) {
+    public GastoDTO buscarGastoPorId(Long gastoId) {
         try {
             HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            String url = gastoServiceUrl + "/gastos/" + gastoId;
+            String url = gastoServiceUrl + "/gastos/divisao/" + gastoId;
 
             ResponseEntity<GastoDTO> response = restTemplate.exchange(
                     url,
@@ -45,13 +46,13 @@ public class GastoClient {
 
             return response.getBody();
         } catch (Exception e) {
-            log.error("Erro ao buscar ERRO AQUI categoria com ID: {}", gastoId, e);
+            log.error("Erro ao buscar ERRO AQUI Gasto com ID: {}", gastoId, e);
             return null;
         }
     }
 
-    public GastoDTO gastoExiste(Long gastoId, String token) {
-        return buscarGastoPorId(gastoId, token);
+    public GastoDTO gastoExiste(Long gastoId) {
+        return buscarGastoPorId(gastoId);
     }
 
     public GastoDTO atualizaGasto(Long idGasto, BigDecimal valor){
@@ -66,7 +67,7 @@ public class GastoClient {
 
             ResponseEntity<GastoDTO> response = restTemplate.exchange(
                     url,
-                    HttpMethod.PATCH,
+                    HttpMethod.PUT,
                     entity,
                     GastoDTO.class
             );

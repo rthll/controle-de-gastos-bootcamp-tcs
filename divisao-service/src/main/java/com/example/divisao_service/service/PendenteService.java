@@ -2,7 +2,9 @@ package com.example.divisao_service.service;
 
 import com.example.divisao_service.client.GastoClient;
 import com.example.divisao_service.dto.*;
+import com.example.divisao_service.entity.GastosDivididos;
 import com.example.divisao_service.entity.Pendente;
+import com.example.divisao_service.repository.GastosDivididosRepository;
 import com.example.divisao_service.repository.PendenteRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -15,12 +17,13 @@ import java.util.stream.Collectors;
 public class PendenteService {
 
     private final PendenteRepository pendenteRepository;
+    private final GastosDivididosRepository gastosDivididosRepository;
     private final GastoClient gastoClient;
     private final TokenService tokenService; // Serviço para gerenciar tokens
 
     public PendenteResponseDTO criarPendencia(String usuarioUmEmail, String usuarioDoisEmail, Long idGasto, BigDecimal valorDividido ){
         String token = tokenService.getCurrentToken();
-        GastoDTO gasto = gastoClient.gastoExiste(idGasto, token);
+        GastoDTO gasto = gastoClient.gastoExiste(idGasto);
 
         gastoClient.buscarUsuarioPorEmail(usuarioDoisEmail, token);
 
@@ -28,9 +31,9 @@ public class PendenteService {
             throw new RuntimeException("Gasto não encontrado");
         }
 
-        if (pendenteRepository.existsByIdGasto(idGasto)) {
-            throw new RuntimeException("Já existe uma pendência para este gasto");
-        }
+//        if (pendenteRepository.existsByIdGasto(idGasto)) {
+//            throw new RuntimeException("Já existe uma pendência para este gasto");
+//        }
 
         Pendente pendente = Pendente.builder()
                 .descricao(gasto.getDescricao())
@@ -76,22 +79,12 @@ public class PendenteService {
 
         String token = tokenService.getCurrentToken();
 
-        GastoDTO gasto = gastoClient.gastoExiste(pendencia.getIdGasto(), token);
-
-        BigDecimal valor = pendencia.getValorTotal().subtract(pendencia.getValorDividido());
+        GastoDTO gasto = gastoClient.gastoExiste(pendencia.getIdGasto());
+//        Pegar o valor atual na tabela de gastos e verifica se o valor da divisao é menor
+        BigDecimal valor = gasto.getValorTotal().subtract(pendencia.getValorDividido());
         if (valor.compareTo(BigDecimal.ZERO) > 0) {
 //            Fazer update no valor do gasto e não criar um novo (pegar pelo idGasto da pendencia)
-            GastoDTO gastoUm = GastoDTO.builder()
-                    .descricao(pendencia.getDescricao())
-                    .valorTotal(valor)
-                    .data(pendencia.getData())
-                    .parcelado(false)
-                    .numeroParcelas(1)
-                    .usuarioId(pendencia.getUsuarioUmId())
-                    .fonte(pendencia.getFonte())
-                    .categoriaId(pendencia.getCategoriaId())
-                    .build();
-            GastoDTO gastoDividido = gastoClient.divideGastos(gastoUm, token);
+            gastoClient.atualizaGasto(pendencia.getIdGasto(), valor);
         }
 
         CategoriaDTO buscaCategoria = gastoClient.buscarCategoriaPorNome("Divisao", token);
@@ -120,8 +113,14 @@ public class PendenteService {
                 .build();
         GastoDTO gastoDivididoDois = gastoClient.divideGastos(gastoDois, token);
 
+        GastosDivididos gastodividido = GastosDivididos.builder()
+                        .valorDividido(pendencia.getValorDividido())
+                        .idUsuario(pendencia.getUsuarioDoisId())
+                        .idGasto(pendencia.getIdGasto())
+                        .build();
+
+        gastosDivididosRepository.save(gastodividido);
         pendenteRepository.deleteById(id);
-        gastoClient.deletarGastoById(pendencia.getIdGasto());
 
         return DivisaoResponseDTO.builder()
                 .gastoUsuarioDois(gastoDivididoDois)
@@ -130,5 +129,9 @@ public class PendenteService {
 
     public void recusaDivisao(Long id) {
         pendenteRepository.deleteById(id);
+    }
+
+    public List<GastosDivididos> listaUsuariosDivididos(Long idGasto){
+       return gastosDivididosRepository.findByIdGasto(idGasto);
     }
 }
