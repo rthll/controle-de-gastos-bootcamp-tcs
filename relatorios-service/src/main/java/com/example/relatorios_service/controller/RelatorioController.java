@@ -55,7 +55,6 @@ public class RelatorioController {
 
         byte[] pdfBytes = relatorioService.gerarRelatorioPdf();
 
-        System.out.println("to aqui porra");
         String filename = String.format("relatorio_gastos_%s_%s.pdf",
                 dataInicio.format(DATE_FORMATTER),
                 dataFim.format(DATE_FORMATTER)
