@@ -1,86 +1,158 @@
+version: '3.8'
+
 services:
+  # Database
   postgres:
     image: postgres:15
-    container_name: postgres
     environment:
-      POSTGRES_DB: users_db
+      POSTGRES_DB: postgres
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: 2701
     ports:
       - "5432:5432"
+    networks:
+      - microservices-network
     volumes:
-      - pgdata:/var/lib/postgresql/data
-    networks:
-      - backend
+      - postgres_data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
 
-  login-auth:
-    build: ./login-auth-api
-    container_name: login-auth-api
-    ports:
-      - "8081:8081"
-    depends_on:
-      - postgres
-    networks:
-      - backend
-
+  # API Gateway
   api-gateway:
     build: ./api-gateway
-    container_name: api-gateway
     ports:
       - "8080:8080"
     depends_on:
-      - login-auth
-      - categorias-services
+      - login-auth-api
       - gastos-services
-      - recuperar-senha-service
+      - categorias-services
       - divisao-service
+      - relatorios-service
+      - recuperar-senha-service
     networks:
-      - backend
+      - microservices-network
+    restart: unless-stopped
 
-  categorias-services:
-    build: ./categorias-services
-    container_name: categorias-services
+  # Login/Auth Service
+  login-auth-api:
+    build: ./login-auth-api
     ports:
-      - "8083:8083"
+      - "8081:8081"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/users_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2701
     networks:
-      - backend
+      - microservices-network
+    restart: unless-stopped
 
+  # Gastos Service
   gastos-services:
     build: ./gastos-services
-    container_name: gastos-services
     ports:
       - "8082:8082"
     depends_on:
-      - postgres
-      - categorias-services
+      postgres:
+        condition: service_healthy
+      categorias-services:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/gastos_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2701
+      - SERVICES_CATEGORIA_URL=http://categorias-services:8083
     networks:
-      - backend
+      - microservices-network
+    restart: unless-stopped
 
+  # Categorias Service
+  categorias-services:
+    build: ./categorias-services
+    ports:
+      - "8083:8083"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/category_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2701
+      - SERVICES_GASTO_URL=http://gastos-services:8082
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # Recuperar Senha Service
   recuperar-senha-service:
     build: ./recuperar-senha-service
-    container_name: recuperar-senha-service
     ports:
       - "8085:8085"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      login-auth-api:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/recovery_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2701
+      - AUTH_SERVICE_URL=http://login-auth-api:8081
     networks:
-      - backend
+      - microservices-network
+    restart: unless-stopped
 
+  # Divisao Service
   divisao-service:
     build: ./divisao-service
-    container_name: divisao-service
     ports:
       - "8086:8086"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
+      login-auth-api:
+        condition: service_started
+      gastos-services:
+        condition: service_started
+      categorias-services:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/divisao_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2701
+      - SERVICES_USER_URL=http://login-auth-api:8081
+      - SERVICES_GASTOS_URL=http://gastos-services:8082
+      - SERVICES_CATEGORIA_URL=http://categorias-services:8083
     networks:
-      - backend
+      - microservices-network
+    restart: unless-stopped
 
-volumes:
-  pgdata:
+  # Relatorios Service
+  relatorios-service:
+    build: ./relatorios-service
+    ports:
+      - "8087:8087"
+    depends_on:
+      gastos-services:
+        condition: service_started
+      categorias-services:
+        condition: service_started
+    environment:
+      - SERVICES_GASTOS_URL=http://gastos-services:8082
+      - SERVICES_CATEGORIA_URL=http://categorias-services:8083
+    networks:
+      - microservices-network
+    restart: unless-stopped
 
 networks:
-  backend:
+  microservices-network:
     driver: bridge
+
+volumes:
+  postgres_data:

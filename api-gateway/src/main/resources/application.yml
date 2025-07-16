@@ -30,7 +30,7 @@ spring:
             - RemoveRequestHeader=Cookie
 
         - id: gastos-service-parcelas
-          uri: http://gastos-service-parcelas:8082
+          uri: http://gastos-services:8082
           predicates:
             - Path=/parcelas/**
           filters:
@@ -41,30 +41,6 @@ spring:
           uri: http://categorias-services:8083
           predicates:
             - Path=/categorias/**
-          filters:
-            - PreserveHostHeader
-            - RemoveRequestHeader=Cookie
-
-        - id: investimentos-service
-          uri: http://localhost:8084
-          predicates:
-            - Path=/investimentos/**
-          filters:
-            - PreserveHostHeader
-            - RemoveRequestHeader=Cookie
-
-        - id: investimentos-service-compras
-          uri: http://localhost:8084
-          predicates:
-            - Path=/compras/**
-          filters:
-            - PreserveHostHeader
-            - RemoveRequestHeader=Cookie
-
-        - id: investimentos-service-rendas
-          uri: http://localhost:8084
-          predicates:
-            - Path=/rendas/**
           filters:
             - PreserveHostHeader
             - RemoveRequestHeader=Cookie
