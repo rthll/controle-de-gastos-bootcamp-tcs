@@ -15,7 +15,7 @@ import java.util.UUID;
 @Builder
 public class ParcelaDTO {
 
-    private UUID id;
+    private Long id;
     private Integer numeroParcela;
     private BigDecimal valorParcela;
     private LocalDateTime dataVencimento;

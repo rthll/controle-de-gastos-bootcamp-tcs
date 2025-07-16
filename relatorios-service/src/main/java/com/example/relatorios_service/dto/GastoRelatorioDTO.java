@@ -9,7 +9,7 @@ import java.util.UUID;
 
 @Data
 public class GastoRelatorioDTO {
-    private UUID id;
+    private Long id;
     private boolean ativo;
     private String descricao;
     private BigDecimal valorTotal;
@@ -18,7 +18,7 @@ public class GastoRelatorioDTO {
     private Integer numeroParcelas;
     private String usuarioId;
     private String fonte;
-    private UUID categoriaId;
+    private Long categoriaId;
     private CategoriaDTO categoria;
     private List<ParcelaDTO> parcelas;
 }
