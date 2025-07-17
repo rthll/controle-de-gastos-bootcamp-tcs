@@ -127,7 +127,7 @@ public class PdfService {
         boolean isOdd = true;
         for (GastoRelatorioDTO gasto : gastos) {
             DeviceRgb bgColor = isOdd ? (DeviceRgb) ColorConstants.WHITE : LIGHT_GRAY;
-
+            System.out.printf(String.valueOf(gasto.getValorTotal()));
             table.addCell(createDataCell(gasto.getDescricao(), bgColor));
 
             String valor = String.format("R$ %.2f", gasto.getValorTotal());

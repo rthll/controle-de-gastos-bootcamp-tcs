@@ -20,18 +20,17 @@ public class GastoClient {
     @Value("${services.gastos.url}")
     private String gastoServiceUrl;
 
-    public List<GastoRelatorioDTO> listarGastos(String token) {
+    public List<GastoRelatorioDTO> buscarGastosPorIds(List<Long> gastoIds, String token) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(token);
-            HttpEntity<String> entity = new HttpEntity<>(headers);
+            HttpEntity<List<Long>> entity = new HttpEntity<>(gastoIds, headers);
 
-            String url = gastoServiceUrl + "/gastos";
+            String url = gastoServiceUrl + "/gastos/buscar-por-ids";
 
-            // Deserializar para List<GastoResponseDTO>
             ResponseEntity<List<GastoRelatorioDTO>> response = restTemplate.exchange(
                     url,
-                    HttpMethod.GET,
+                    HttpMethod.POST,
                     entity,
                     new ParameterizedTypeReference<List<GastoRelatorioDTO>>() {}
             );

@@ -20,20 +20,17 @@ public class RelatorioService {
     private final PdfService pdfService;
     private final TokenService tokenService;
 
-    public byte[] gerarRelatorioPdf() {
+    public byte[] gerarRelatorioPdf(RelatorioRequestDTO relatorioRequest) {
+
         try {
             String token = tokenService.getCurrentToken();
             System.out.println("Token: " + token);
-            List<GastoRelatorioDTO> gastos = gastoClient.listarGastos(
-                    token
-            );
+            List<GastoRelatorioDTO> gastosSelecionados = gastoClient.buscarGastosPorIds(relatorioRequest.getGastoIds(), token);
 
-            log.info("Encontrados {} gastos para o relatório", gastos.size());
+            log.info("Encontrados {} gastos para o relatório", gastosSelecionados.size());
 
             // Gera o PDF
-            return pdfService.gerarRelatorioPdf(
-                    gastos
-            );
+            return pdfService.gerarRelatorioPdf(gastosSelecionados);
 
         } catch (IOException e) {
             log.error("Erro ao gerar relatório PDF: ", e);
