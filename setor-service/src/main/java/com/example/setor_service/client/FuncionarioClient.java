@@ -27,7 +27,7 @@ public class FuncionarioClient {
             headers.setBearerAuth(token);
             HttpEntity<String> entity = new HttpEntity<>(headers);
 
-            String url = funcionariosServiceUrl + "/gastos/existe-categoria/" + setorId;
+            String url = funcionariosServiceUrl + "/funcionarios/existe-setor/" + setorId;
 
             ResponseEntity<Boolean> response = restTemplate.exchange(
                     url,

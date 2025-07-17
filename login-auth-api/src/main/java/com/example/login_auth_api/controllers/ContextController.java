@@ -36,7 +36,7 @@ public class ContextController {
 
         String newToken = tokenService.generateToken(user);
 
-        return ResponseEntity.ok(new ResponseDTO(user.getName(), newToken));
+        return ResponseEntity.ok(new ResponseDTO(user.getName(), newToken, user.getRole()));
     }
 
     @GetMapping("/current")

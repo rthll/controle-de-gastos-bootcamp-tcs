@@ -3,6 +3,7 @@ package com.example.funcionarios_service.service;
 import com.example.funcionarios_service.client.SetorClient;
 import com.example.funcionarios_service.dto.FuncionarioRequestDTO;
 import com.example.funcionarios_service.dto.FuncionarioResponseDTO;
+import com.example.funcionarios_service.dto.SetorDTO;
 import com.example.funcionarios_service.entity.Funcionario;
 import com.example.funcionarios_service.exception.FuncionarioNotFoundException;
 import com.example.funcionarios_service.exception.SetorNotFoundException;
@@ -86,9 +87,9 @@ public class FuncionarioService {
         }
 
         String token = tokenService.getCurrentToken();
-//        if (!setorClient.setorExiste(dto.getSetorId(), token)) {
-//            throw new SetorNotFoundException("Setor não encontrado");
-//        }
+       if (!setorClient.setorExiste(dto.getSetorId(), token)) {
+          throw new SetorNotFoundException("Setor não encontrado");
+      }
         funcionario.setNome(dto.getNome());
         funcionario.setTelefone(dto.getTelefone());
         funcionario.setCargo(dto.getCargo());
@@ -133,8 +134,8 @@ public class FuncionarioService {
     }
 
     private FuncionarioResponseDTO mapToResponseDTO(Funcionario funcionario) {
-//        String token = tokenService.getCurrentToken();
-//        SetorDTO setorDTO = setorClient.buscarSetorPorId(funcionario.getSetorId(), token);
+      String token = tokenService.getCurrentToken();
+      SetorDTO setorDTO = setorClient.buscarSetorPorId(funcionario.getSetorId(), token);
 
         return FuncionarioResponseDTO.builder()
                 .id(funcionario.getId())
@@ -145,7 +146,7 @@ public class FuncionarioService {
                 .salario(funcionario.getSalario())
                 .ativo(funcionario.isAtivo())
                 .usuarioId(funcionario.getUsuarioId())
-                .setorId(funcionario.getSetorId())
+                .setor(setorDTO)
                 .build();
     }
 }

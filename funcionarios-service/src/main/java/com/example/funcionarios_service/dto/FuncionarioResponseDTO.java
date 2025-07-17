@@ -23,5 +23,5 @@ public class FuncionarioResponseDTO {
     private BigDecimal salario;
     private boolean ativo;
     private String usuarioId;
-    private Long setorId;
+    private SetorDTO setor;
 }
