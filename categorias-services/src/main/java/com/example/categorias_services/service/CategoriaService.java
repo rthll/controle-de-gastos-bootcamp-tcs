@@ -26,6 +26,7 @@ public class CategoriaService {
                 .nome(dto.getNome())
                 .descricao(dto.getDescricao())
                 .usuarioId(usuarioEmail)
+                .limiteDeGasto(dto.getLimiteDeGasto())
                 .build();
 
         categoria = categoriaRepository.save(categoria);
@@ -52,11 +53,11 @@ public class CategoriaService {
 
     public CategoriaResponseDTO atualizarCategoria(Long id, String usuarioEmail, CategoriaRequestDTO dto) {
         Categoria categoria = categoriaRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+                .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));
 
         categoria.setNome(dto.getNome());
         categoria.setDescricao(dto.getDescricao());
-        categoria.setLimiteDeGasto(dto.getLimiteDeGasto()); // aqui você atualiza o limite
+        categoria.setLimiteDeGasto(dto.getLimiteDeGasto());
 
         categoria = categoriaRepository.save(categoria);
 
@@ -65,6 +66,7 @@ public class CategoriaService {
                 .nome(categoria.getNome())
                 .descricao(categoria.getDescricao())
                 .limiteDeGasto(categoria.getLimiteDeGasto())
+                .usuarioId(usuarioEmail)
                 .build();
     }
 
@@ -89,6 +91,7 @@ public class CategoriaService {
                 .id(categoria.getId())
                 .nome(categoria.getNome())
                 .descricao(categoria.getDescricao())
+                .limiteDeGasto(categoria.getLimiteDeGasto())
                 .usuarioId(categoria.getUsuarioId())
                 .build();
     }

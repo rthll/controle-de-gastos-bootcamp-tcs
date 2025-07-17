@@ -16,4 +16,5 @@ public class CategoriaRequestDTO {
 
     private BigDecimal limiteDeGasto;
 
+
 }
