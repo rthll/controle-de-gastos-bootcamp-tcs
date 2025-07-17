@@ -1,12 +1,12 @@
 package com.example.login_auth_api.controllers;
 
 import com.example.login_auth_api.domain.User.User;
+import com.example.login_auth_api.domain.User.UserRole;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import com.example.login_auth_api.repositories.UserRepository;
 import java.util.Optional;
-
 
 @RestController
 @RequestMapping("/internal")
@@ -20,16 +20,15 @@ public class InternalController {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public record UserDTO(Long id, String name, String email) {}
+    public record UserDTO(Long id, String name, String email, UserRole role) {}
     public record PasswordUpdateRequest(String email, String newPassword) {}
-
 
     @GetMapping("/user/email/{email}")
     public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
         Optional<User> user = repository.findByEmail(email);
         if (user.isPresent()) {
             User u = user.get();
-            UserDTO userDTO = new UserDTO(u.getId(), u.getName(), u.getEmail());
+            UserDTO userDTO = new UserDTO(u.getId(), u.getName(), u.getEmail(), u.getRole());
             return ResponseEntity.ok(userDTO);
         }
         return ResponseEntity.notFound().build();
@@ -43,6 +42,15 @@ public class InternalController {
             u.setPassword(passwordEncoder.encode(request.newPassword()));
             repository.save(u);
             return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+
+    @GetMapping("/user/role/{email}")
+    public ResponseEntity<UserRole> getUserRole(@PathVariable String email) {
+        Optional<User> user = repository.findByEmail(email);
+        if (user.isPresent()) {
+            return ResponseEntity.ok(user.get().getRole());
         }
         return ResponseEntity.notFound().build();
     }

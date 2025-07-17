@@ -17,6 +17,8 @@
     <module>recuperar-senha-service</module>
     <module>divisao-service</module>
     <module>relatorios-service</module>
+    <module>setor-service</module>
+    <module>funcionarios-service</module>
   </modules>
 
   <dependencyManagement>

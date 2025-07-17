@@ -33,6 +33,8 @@ services:
       - divisao-service
       - relatorios-service
       - recuperar-senha-service
+      - setor-service
+      - funcionarios-service
     networks:
       - microservices-network
     restart: unless-stopped
@@ -146,6 +148,40 @@ services:
     environment:
       - SERVICES_GASTOS_URL=http://gastos-services:8082
       - SERVICES_CATEGORIA_URL=http://categorias-services:8083
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # Funcionarios Service
+  funcionarios-service:
+    build: ./funcionarios-service
+    ports:
+      - "8089:8089"
+    depends_on:
+      setor-service:
+        condition: service_started
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/employee_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2701
+      - SERVICES_SETOR_URL=http://setor-service:8088
+    networks:
+      - microservices-network
+    restart: unless-stopped
+
+  # Setor Service
+  setor-service:
+    build: ./setor-service
+    ports:
+      - "8088:8088"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://postgres:5432/sector_db
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=2701
+      - SERVICES_FUNCIONARIO_URL=http://funcionarios-service:8089
     networks:
       - microservices-network
     restart: unless-stopped

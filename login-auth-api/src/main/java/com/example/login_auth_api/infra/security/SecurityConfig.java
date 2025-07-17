@@ -35,6 +35,11 @@ public class SecurityConfig {
                         .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                         .requestMatchers(HttpMethod.POST, "/auth/register").permitAll()
                         .requestMatchers(HttpMethod.PATCH, "/user").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/user/verifica/**").permitAll()
+
+                        .requestMatchers("/auth/empresarial/**").hasRole("EMPRESARIAL")
+                        .requestMatchers("/auth/pessoal/**").hasRole("PESSOAL")
+
                         .anyRequest().authenticated()
                 )
                 .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class);

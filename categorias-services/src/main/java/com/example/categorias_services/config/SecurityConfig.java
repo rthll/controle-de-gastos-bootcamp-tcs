@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
@@ -25,13 +26,13 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(authorize -> authorize
                         .requestMatchers("/actuator/**").permitAll()
-                        .requestMatchers(HttpMethod.GET, "/categorias/**").authenticated()
-                        .requestMatchers(HttpMethod.POST, "/categorias/**").authenticated()
-                        .requestMatchers(HttpMethod.PUT, "/categorias/**").authenticated()
-                        .requestMatchers(HttpMethod.DELETE, "/categorias/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/categorias/**").authenticated()
+                        .requestMatchers(HttpMethod.GET, "/categorias/**").hasRole("PESSOAL")
+                        .requestMatchers(HttpMethod.POST, "/categorias/**").hasRole("PESSOAL")
+                        .requestMatchers(HttpMethod.PUT, "/categorias/**").hasRole("PESSOAL")
+                        .requestMatchers(HttpMethod.DELETE, "/categorias/**").hasRole("PESSOAL")
                         .anyRequest().authenticated()
                 )
+
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();

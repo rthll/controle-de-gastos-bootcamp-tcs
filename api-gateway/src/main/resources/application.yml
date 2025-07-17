@@ -61,6 +61,22 @@ spring:
             - PreserveHostHeader
             - RemoveRequestHeader=Cookie
 
+        - id: funcionarios-service
+          uri: http://funcionarios-service:8089
+          predicates:
+            - Path=/funcionarios/**
+          filters:
+            - PreserveHostHeader
+            - RemoveRequestHeader=Cookie
+
+        - id: setor-service
+          uri: http://setor-service:8088
+          predicates:
+            - Path=/setores/**
+          filters:
+            - PreserveHostHeader
+            - RemoveRequestHeader=Cookie
+
       default-filters:
         - AddResponseHeader=X-Gateway, ControleGastosAPI
 

@@ -1,6 +1,7 @@
 package com.example.login_auth_api.controllers;
 
 import com.example.login_auth_api.domain.User.User;
+import com.example.login_auth_api.domain.User.UserRole;
 import com.example.login_auth_api.dto.LoginRequestDTO;
 import com.example.login_auth_api.dto.RegisterRequestDTO;
 import com.example.login_auth_api.dto.ResponseDTO;
@@ -24,8 +25,9 @@ public class AuthController {
     private final TokenService tokenService;
 
     public record PasswordUpdateRequest(String email, String newPassword) {}
-    public record UserDTO(String id, String name, String email) {}
-    
+
+    public record UserDTO(String id, String name, String email, UserRole role) {}
+
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body){
         User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new UsuarioNotFoundException("usuario não encontrado"));
@@ -45,6 +47,9 @@ public class AuthController {
             newUser.setPassword(passwordEncoder.encode(body.password()));
             newUser.setEmail(body.email());
             newUser.setName(body.name());
+
+            newUser.setRole(body.role() != null ? body.role() : UserRole.PESSOAL);
+
             this.repository.save(newUser);
 
             String token = this.tokenService.generateToken(newUser);
@@ -52,5 +57,4 @@ public class AuthController {
         }
         return ResponseEntity.badRequest().build();
     }
-
 }

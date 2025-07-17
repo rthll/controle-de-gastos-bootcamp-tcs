@@ -6,7 +6,6 @@ import com.auth0.jwt.exceptions.JWTCreationException;
 import com.auth0.jwt.exceptions.JWTVerificationException;
 import com.example.login_auth_api.domain.User.User;
 import org.springframework.beans.factory.annotation.Value;
-
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;
@@ -26,6 +25,7 @@ public class TokenService {
                     .withIssuer("login-auth-api")
                     .withSubject(user.getEmail())
                     .withClaim("usuarioId", user.getId())
+                    .withClaim("role", user.getRole().getRole())
                     .withExpiresAt(this.generateExpirationDate())
                     .sign(algorithm);
             return token;
@@ -43,6 +43,20 @@ public class TokenService {
                     .verify(token)
                     .getSubject();
         }catch(JWTVerificationException exception){
+            return null;
+        }
+    }
+
+    public String extractRole(String token) {
+        try {
+            Algorithm algorithm = Algorithm.HMAC256(secret);
+            return JWT.require(algorithm)
+                    .withIssuer("login-auth-api")
+                    .build()
+                    .verify(token)
+                    .getClaim("role")
+                    .asString();
+        } catch (JWTVerificationException exception) {
             return null;
         }
     }
