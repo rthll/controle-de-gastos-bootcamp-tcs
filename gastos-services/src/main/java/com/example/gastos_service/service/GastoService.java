@@ -43,6 +43,29 @@ public class GastoService {
                 .collect(Collectors.toList());
     }
 
+    public List<GastoResponseDTO> buscarGastosPorIds(List<Long> gastoIds, String usuarioEmail) {
+        if (gastoIds == null || gastoIds.isEmpty()) {
+            throw new IllegalArgumentException("Lista de gastos vazia.");
+        }
+
+        List<Gasto> gastos = gastoRepository.findAllById(gastoIds);
+
+        if (gastos.isEmpty()) {
+            throw new IllegalArgumentException("Nenhum gasto encontrado.");
+        }
+
+        List<Gasto> listarApenasUsuario = gastos.stream()
+                .filter(gasto -> gasto.getUsuarioId().equals(usuarioEmail))
+                .collect(Collectors.toList());
+        if (listarApenasUsuario.isEmpty()) {
+            throw new IllegalArgumentException("Nenhum gasto para o usuário encontrado.");
+        }
+
+        return listarApenasUsuario.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     public GastoResponseDTO criarGasto(String usuarioEmail, GastoRequestDTO dto) {
         String token = tokenService.getCurrentToken();
         if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
