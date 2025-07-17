@@ -46,6 +46,21 @@ public class GastoController {
         return ResponseEntity.ok(response);
     }
 
+    @PostMapping("/buscar-por-ids")
+    public ResponseEntity<List<GastoResponseDTO>> buscarGastosPorIds(
+            @RequestBody List<Long> gastoIds) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+
+        System.out.println("IDs: " + gastoIds);
+        System.out.println("Usuário: " + usuarioEmail);
+
+        List<GastoResponseDTO> gastos = gastoService.buscarGastosPorIds(gastoIds, usuarioEmail);
+
+        return ResponseEntity.ok(gastos);
+    }
+
     @PatchMapping("/{gastoId}")
     public ResponseEntity<GastoResponseDTO> editarGasto(
             @PathVariable Long gastoId,
