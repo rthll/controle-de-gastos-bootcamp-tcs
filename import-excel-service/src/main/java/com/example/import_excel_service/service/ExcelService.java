@@ -26,17 +26,7 @@ public List<ImportExcelDTO> extract (MultipartFile file) {
                 Row row = sheet.getRow(rowIndex);
 
                 if (row != null) {
-                    Gasto gasto = Gasto.builder()
-                    .descricao(dto.getDescricao())
-                    .valorTotal(dto.getValorTotal())
-                    .data(dto.getData())
-                    .parcelado(dto.isParcelado())
-                    .numeroParcelas(dto.getNumeroParcelas())
-                    .usuarioId(usuarioEmail)
-                    .fonte(dto.getFonte())
-                    .categoriaId(dto.getCategoriaId())
-                    .ativo(true)
-                    .build();
+
 
                 }
             }
