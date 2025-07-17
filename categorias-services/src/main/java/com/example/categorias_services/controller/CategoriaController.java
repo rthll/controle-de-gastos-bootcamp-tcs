@@ -42,6 +42,16 @@ public class CategoriaController {
         return ResponseEntity.ok(categoria);
     }
 
+    @PutMapping("/{id}")
+    public ResponseEntity<CategoriaResponseDTO> atualizarCategoria(
+            @PathVariable Long id,
+            @RequestBody CategoriaRequestDTO dto) {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+        CategoriaResponseDTO atualizado = categoriaService.atualizarCategoria(id,usuarioEmail, dto);
+        return ResponseEntity.ok(atualizado);
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deletar(@PathVariable Long id) {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();

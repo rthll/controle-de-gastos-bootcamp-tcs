@@ -50,6 +50,24 @@ public class CategoriaService {
         return toResponseDTO(categoria);
     }
 
+    public CategoriaResponseDTO atualizarCategoria(Long id, String usuarioEmail, CategoriaRequestDTO dto) {
+        Categoria categoria = categoriaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada"));
+
+        categoria.setNome(dto.getNome());
+        categoria.setDescricao(dto.getDescricao());
+        categoria.setLimiteDeGasto(dto.getLimiteDeGasto()); // aqui você atualiza o limite
+
+        categoria = categoriaRepository.save(categoria);
+
+        return CategoriaResponseDTO.builder()
+                .id(categoria.getId())
+                .nome(categoria.getNome())
+                .descricao(categoria.getDescricao())
+                .limiteDeGasto(categoria.getLimiteDeGasto())
+                .build();
+    }
+
     public void deletar(Long id, String usuarioEmail) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new CategoriaNotFoundException("Categoria não encontrada"));

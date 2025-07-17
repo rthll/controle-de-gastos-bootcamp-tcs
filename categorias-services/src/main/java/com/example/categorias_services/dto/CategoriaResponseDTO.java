@@ -2,6 +2,7 @@ package com.example.categorias_services.dto;
 
 import lombok.*;
 
+import java.math.BigDecimal;
 import java.util.UUID;
 
 @Data
@@ -15,6 +16,8 @@ public class CategoriaResponseDTO {
     private String nome;
 
     private String descricao;
+
+    private BigDecimal limiteDeGasto;
 
     private String usuarioId;
 }
