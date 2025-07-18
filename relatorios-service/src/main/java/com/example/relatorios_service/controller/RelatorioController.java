@@ -11,6 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 @RestController
@@ -19,7 +20,7 @@ import java.time.format.DateTimeFormatter;
 public class RelatorioController {
 
     private final RelatorioService relatorioService;
-    private static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("dd-MM-yyyy");
+    private static final DateTimeFormatter formatarDataHora = DateTimeFormatter.ofPattern("yyyy-MM-dd_HH-mm-ss");
 
 
     @PostMapping("/gastos/pdf")
@@ -27,7 +28,8 @@ public class RelatorioController {
 
         byte[] pdfBytes = relatorioService.gerarRelatorioPdf(relatorioRequest);
 
-        String filename = String.format("relatorio_gastos_%s_%s.pdf");
+        String datahora = LocalDateTime.now().format(formatarDataHora);
+        String filename = String.format("relatorio_gastos_%s.pdf", datahora);
 
         return ResponseEntity.ok()
                 .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + filename + "\"")
