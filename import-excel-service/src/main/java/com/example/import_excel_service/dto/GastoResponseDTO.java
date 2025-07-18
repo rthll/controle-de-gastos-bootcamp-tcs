@@ -1,13 +1,20 @@
 package com.example.import_excel_service.dto;
 
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.List;
 
-
 @Data
-public class ImportExcelDTO {
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class GastoResponseDTO {
+
     private Long id;
     private boolean ativo;
     private String descricao;
@@ -19,5 +26,6 @@ public class ImportExcelDTO {
     private String fonte;
     private Long categoriaId;
     private CategoriaDTO categoria;
+
     private List<ParcelaDTO> parcelas;
 }

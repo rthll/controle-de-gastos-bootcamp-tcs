@@ -7,15 +7,16 @@ import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ParcelaDTO {
 
-    private Long id;
-    private Integer numeroParcela;
-    private BigDecimal valorParcela;
-    private LocalDateTime dataVencimento;
+public class ResultImportDTO {
+
+    private Integer totalGastosImportados;
+    private List<GastoImportDTO> gastosImportados;
+
 }
