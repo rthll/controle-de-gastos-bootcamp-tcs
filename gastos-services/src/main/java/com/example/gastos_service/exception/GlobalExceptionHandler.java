@@ -1,49 +1,37 @@
 package com.example.gastos_service.exception;
 
 import com.example.gastos_service.dto.ErrorDTO;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
-
 @RestControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
-    @ExceptionHandler(GastoNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleGastoNotFound(GastoNotFoundException ex) {
-        ErrorDTO erro = new ErrorDTO("GASTO_ERRO", ex.getMessage());
-        return new ResponseEntity<>(erro, HttpStatus.BAD_REQUEST);
+    @ExceptionHandler(CategoriaServiceUnavailableException.class)
+    public ResponseEntity<ErrorDTO> handleCategoriaServiceUnavailable(CategoriaServiceUnavailableException ex) {
+        log.error("Serviço de categorias indisponível: {}", ex.getMessage());
+
+        ErrorDTO error = new ErrorDTO(
+                "CATEGORIA_SERVICE_UNAVAILABLE",
+                "Serviço de categorias temporariamente indisponível. Tente novamente em alguns instantes."
+        );
+
+        return ResponseEntity.status(HttpStatus.SERVICE_UNAVAILABLE).body(error);
     }
 
     @ExceptionHandler(CategoriaNotFoundException.class)
-    public ResponseEntity<ErrorDTO> handleRendaNotFound(CategoriaNotFoundException ex) {
-        ErrorDTO erro = new ErrorDTO("GASTO_ERRO", ex.getMessage());
-        return new ResponseEntity<>(erro, HttpStatus.BAD_REQUEST);
-    }
+    public ResponseEntity<ErrorDTO> handleCategoriaNotFound(CategoriaNotFoundException ex) {
+        log.error("Categoria não encontrada: {}", ex.getMessage());
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<List<ErrorDTO>> handleValidationExceptions(MethodArgumentNotValidException ex) {
-        List<ErrorDTO> errors = ex.getBindingResult().getAllErrors().stream()
-                .map(error -> {
-                    String fieldName = ((FieldError) error).getField();
-                    String errorMessage = error.getDefaultMessage();
-                    return new ErrorDTO(fieldName, errorMessage);
-                })
-                .collect(Collectors.toList());
+        ErrorDTO error = new ErrorDTO(
+                "CATEGORIA_NOT_FOUND",
+                ex.getMessage()
+        );
 
-        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(errors);
-    }
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ErrorDTO> handleGenericException(Exception ex) {
-        ErrorDTO erro = new ErrorDTO("ERRO_INTERNO", "Erro interno do servidor");
-        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(erro);
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
     }
 }

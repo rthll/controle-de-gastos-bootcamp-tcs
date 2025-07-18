@@ -8,9 +8,11 @@ import com.example.gastos_service.dto.ParcelaDTO;
 import com.example.gastos_service.entity.Gasto;
 import com.example.gastos_service.entity.Parcela;
 import com.example.gastos_service.exception.CategoriaNotFoundException;
+import com.example.gastos_service.exception.CategoriaServiceUnavailableException;
 import com.example.gastos_service.exception.GastoNotFoundException;
 import com.example.gastos_service.repository.GastoRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -22,6 +24,7 @@ import java.util.stream.Stream;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class GastoService {
 
     private final GastoRepository gastoRepository;
@@ -67,9 +70,24 @@ public class GastoService {
     }
 
     public GastoResponseDTO criarGasto(String usuarioEmail, GastoRequestDTO dto) {
+        log.info("Iniciando criação de gasto para usuário: {}", usuarioEmail);
+
         String token = tokenService.getCurrentToken();
-        if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
-            throw new CategoriaNotFoundException("Categoria não encontrada");
+
+        try {
+            if (!categoriaClient.categoriaExiste(dto.getCategoriaId(), token)) {
+                log.warn("Categoria {} não encontrada", dto.getCategoriaId());
+                throw new CategoriaNotFoundException("Categoria não encontrada");
+            }
+
+            log.info("Categoria {} validada com sucesso", dto.getCategoriaId());
+
+        } catch (CategoriaServiceUnavailableException e) {
+            log.error("Serviço de categorias indisponível durante criação do gasto: {}", e.getMessage());
+            log.warn("Aplicando fallback: criando gasto sem validação de categoria devido à indisponibilidade do serviço");
+            // Lançar exceção e não permitir criação
+            throw new CategoriaServiceUnavailableException("Não é possível criar o gasto no momento. Serviço de categorias indisponível.");
+
         }
 
         Gasto gasto = Gasto.builder()
@@ -84,6 +102,7 @@ public class GastoService {
                 .ativo(true)
                 .build();
 
+        // Cria as parcelas se necessário
         if (dto.isParcelado() && dto.getNumeroParcelas() != null && dto.getNumeroParcelas() > 1) {
             List<Parcela> parcelas = new ArrayList<>();
             BigDecimal valorParcela = dto.getValorTotal()
@@ -102,6 +121,8 @@ public class GastoService {
         }
 
         Gasto salvo = gastoRepository.save(gasto);
+        log.info("Gasto criado com sucesso: {}", salvo.getId());
+
         return mapToResponseDTO(salvo);
     }
 
@@ -246,8 +267,14 @@ public class GastoService {
                     .build()).collect(Collectors.toList());
         }
 
-        String token = tokenService.getCurrentToken();
-        CategoriaDTO categoria = categoriaClient.buscarCategoriaPorId(gasto.getCategoriaId(), token);
+        CategoriaDTO categoria = null;
+        try {
+            String token = tokenService.getCurrentToken();
+            categoria = categoriaClient.buscarCategoriaPorId(gasto.getCategoriaId(), token);
+        } catch (CategoriaServiceUnavailableException e) {
+            log.warn("Não foi possível buscar detalhes da categoria {} devido à indisponibilidade do serviço",
+                    gasto.getCategoriaId());
+        }
 
         return GastoResponseDTO.builder()
                 .id(gasto.getId())
