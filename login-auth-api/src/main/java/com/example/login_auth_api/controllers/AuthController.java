@@ -30,7 +30,9 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity login(@RequestBody LoginRequestDTO body){
-        User user = this.repository.findByEmail(body.email()).orElseThrow(() -> new UsuarioNotFoundException("usuario não encontrado"));
+        User user = this.repository.findByEmailWithProcedure(body.email())
+                .orElseThrow(() -> new UsuarioNotFoundException("usuario não encontrado"));
+
         if(passwordEncoder.matches(body.password(), user.getPassword())) {
             String token = this.tokenService.generateToken(user);
             return ResponseEntity.ok(new ResponseDTO(user.getName(), token, user.getRole()));
@@ -40,17 +42,19 @@ public class AuthController {
 
     @PostMapping("/register")
     public ResponseEntity register(@RequestBody RegisterRequestDTO body){
-        Optional<User> user = this.repository.findByEmail(body.email());
+        Boolean userExists = this.repository.userExistsWithProcedure(body.email());
 
-        if(user.isEmpty()) {
-            User newUser = new User();
-            newUser.setPassword(passwordEncoder.encode(body.password()));
-            newUser.setEmail(body.email());
-            newUser.setName(body.name());
+        if(!userExists) {
+            String role = body.role() != null ? body.role().name() : UserRole.PESSOAL.name();
+            Long userId = this.repository.registerUserWithProcedure(
+                    body.name(),
+                    body.email(),
+                    passwordEncoder.encode(body.password()),
+                    role
+            );
 
-            newUser.setRole(body.role() != null ? body.role() : UserRole.PESSOAL);
-
-            this.repository.save(newUser);
+            User newUser = this.repository.findByEmailWithProcedure(body.email())
+                    .orElseThrow(() -> new RuntimeException("Erro ao buscar usuário recém-criado"));
 
             String token = this.tokenService.generateToken(newUser);
             return ResponseEntity.ok(new ResponseDTO(newUser.getName(), token, newUser.getRole()));

@@ -25,7 +25,7 @@ public class InternalController {
 
     @GetMapping("/user/email/{email}")
     public ResponseEntity<UserDTO> getUserByEmail(@PathVariable String email) {
-        Optional<User> user = repository.findByEmail(email);
+        Optional<User> user = repository.findByEmailWithProcedure(email);
         if (user.isPresent()) {
             User u = user.get();
             UserDTO userDTO = new UserDTO(u.getId(), u.getName(), u.getEmail(), u.getRole());
@@ -36,11 +36,12 @@ public class InternalController {
 
     @PostMapping("/user/password")
     public ResponseEntity<Void> updateUserPassword(@RequestBody PasswordUpdateRequest request) {
-        Optional<User> user = repository.findByEmail(request.email());
-        if (user.isPresent()) {
-            User u = user.get();
-            u.setPassword(passwordEncoder.encode(request.newPassword()));
-            repository.save(u);
+        Boolean userExists = repository.userExistsWithProcedure(request.email());
+        if (userExists) {
+            repository.updatePasswordWithProcedure(
+                    request.email(),
+                    passwordEncoder.encode(request.newPassword())
+            );
             return ResponseEntity.ok().build();
         }
         return ResponseEntity.notFound().build();
@@ -48,9 +49,10 @@ public class InternalController {
 
     @GetMapping("/user/role/{email}")
     public ResponseEntity<UserRole> getUserRole(@PathVariable String email) {
-        Optional<User> user = repository.findByEmail(email);
-        if (user.isPresent()) {
-            return ResponseEntity.ok(user.get().getRole());
+        String roleString = repository.getUserRoleWithProcedure(email);
+        if (roleString != null) {
+            UserRole role = UserRole.valueOf(roleString);
+            return ResponseEntity.ok(role);
         }
         return ResponseEntity.notFound().build();
     }

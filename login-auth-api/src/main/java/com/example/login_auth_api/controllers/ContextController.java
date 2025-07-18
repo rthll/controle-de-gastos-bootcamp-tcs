@@ -31,12 +31,14 @@ public class ContextController {
 
         User user = (User) authentication.getPrincipal();
 
-        user.setRole(request.newRole());
-        userRepository.save(user);
+        userRepository.switchUserRoleWithProcedure(user.getEmail(), request.newRole().name());
 
-        String newToken = tokenService.generateToken(user);
+        User updatedUser = userRepository.findByEmailWithProcedure(user.getEmail())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
-        return ResponseEntity.ok(new ResponseDTO(user.getName(), newToken, user.getRole()));
+        String newToken = tokenService.generateToken(updatedUser);
+
+        return ResponseEntity.ok(new ResponseDTO(updatedUser.getName(), newToken, updatedUser.getRole()));
     }
 
     @GetMapping("/current")
@@ -48,7 +50,11 @@ public class ContextController {
         }
 
         User user = (User) authentication.getPrincipal();
-        return ResponseEntity.ok(new ContextResponse(user.getRole()));
+
+        String currentRole = userRepository.getUserRoleWithProcedure(user.getEmail());
+        UserRole role = UserRole.valueOf(currentRole);
+
+        return ResponseEntity.ok(new ContextResponse(role));
     }
 
     public record ContextResponse(UserRole currentRole) {}

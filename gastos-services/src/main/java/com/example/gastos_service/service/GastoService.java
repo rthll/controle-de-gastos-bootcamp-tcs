@@ -295,7 +295,6 @@ public class GastoService {
     public boolean existeGastoComCategoria(Long categoriaId, String usuarioEmail) {
         return gastoRepository.findByUsuarioId(usuarioEmail)
                 .stream()
-                .filter(Gasto::isAtivo)
                 .anyMatch(gasto -> gasto.getCategoriaId().equals(categoriaId));
     }
 

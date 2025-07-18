@@ -19,13 +19,15 @@ public class UserService {
     }
 
     public void editarUsuario(String email, EditRequestDTO dto) throws InvalidPasswordException {
-        User user = repository.findByEmail(email)
+        User user = repository.findByEmailWithProcedure(email)
                 .orElseThrow(() -> new UsernameNotFoundException("Usuário não encontrado"));
 
         boolean updated = false;
+        String newName = null;
+        String newPassword = null;
 
         if (dto.name() != null && !dto.name().isBlank() && !dto.name().equals(user.getName())) {
-            user.setName(dto.name());
+            newName = dto.name();
             updated = true;
         }
 
@@ -40,7 +42,7 @@ public class UserService {
                 throw new InvalidPasswordException("A nova senha não pode ser igual à antiga.");
             }
 
-            user.setPassword(passwordEncoder.encode(dto.newPassword()));
+            newPassword = passwordEncoder.encode(dto.newPassword());
             updated = true;
         }
 
@@ -48,6 +50,6 @@ public class UserService {
             throw new IllegalArgumentException("Nenhum dado para atualizar.");
         }
 
-        repository.save(user);
+        repository.updateUserWithProcedure(email, newName, newPassword);
     }
 }

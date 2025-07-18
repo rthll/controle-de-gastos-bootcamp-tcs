@@ -59,8 +59,11 @@ public class UserController {
 
     @GetMapping("/verifica/{email}")
     public ResponseEntity<?> verificaCadastro(@PathVariable String email){
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UsuarioNotFoundException("Usuário não encontrado"));
+        Boolean userExists = userRepository.userExistsWithProcedure(email);
+
+        if(!userExists) {
+            throw new UsuarioNotFoundException("Usuário não encontrado");
+        }
 
         return ResponseEntity.ok().build();
     }
