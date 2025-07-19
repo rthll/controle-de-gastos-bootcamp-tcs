@@ -1,10 +1,7 @@
 package com.example.gastos_service.service;
 
 import com.example.gastos_service.client.CategoriaClient;
-import com.example.gastos_service.dto.CategoriaDTO;
-import com.example.gastos_service.dto.GastoRequestDTO;
-import com.example.gastos_service.dto.GastoResponseDTO;
-import com.example.gastos_service.dto.ParcelaDTO;
+import com.example.gastos_service.dto.*;
 import com.example.gastos_service.entity.Gasto;
 import com.example.gastos_service.entity.Parcela;
 import com.example.gastos_service.exception.CategoriaNotFoundException;
@@ -18,6 +15,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.YearMonth;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -255,6 +253,40 @@ public class GastoService {
 
         return totalPorMes;
     }
+
+    public List<TotalPorMesDTO> calcularTotalGastosPorMesDTO(String usuarioEmail) {
+        List<Gasto> gastos = gastoRepository.findByUsuarioId(usuarioEmail);
+        Map<YearMonth, BigDecimal> totalPorMes = new TreeMap<>();
+        YearMonth mesAtual = YearMonth.now();
+
+        gastos.stream()
+                .filter(Gasto::isAtivo)
+                .forEach(gasto -> {
+                    if (gasto.isParcelado() && gasto.getParcelas() != null && !gasto.getParcelas().isEmpty()) {
+                        gasto.getParcelas().stream()
+                                .filter(parcela -> !YearMonth.from(parcela.getDataVencimento()).isBefore(mesAtual))
+                                .forEach(parcela -> {
+                                    YearMonth mesVencimento = YearMonth.from(parcela.getDataVencimento());
+                                    totalPorMes.merge(mesVencimento, parcela.getValorParcela(), BigDecimal::add);
+                                });
+                    } else {
+                        YearMonth mesGasto = YearMonth.from(gasto.getData());
+                        if (!mesGasto.isBefore(mesAtual)) {
+                            totalPorMes.merge(mesGasto, gasto.getValorTotal(), BigDecimal::add);
+                        }
+                    }
+                });
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM/yyyy").withLocale(new Locale("pt", "BR"));
+
+        return totalPorMes.entrySet().stream()
+                .map(entry -> new TotalPorMesDTO(
+                        entry.getKey().format(formatter), // Ex: "Julho/2025"
+                        entry.getValue()
+                ))
+                .collect(Collectors.toList());
+    }
+
 
     private GastoResponseDTO mapToResponseDTO(Gasto gasto) {
         List<ParcelaDTO> parcelas = new ArrayList<>();

@@ -2,6 +2,7 @@ package com.example.funcionarios_service.controller;
 
 import com.example.funcionarios_service.dto.FuncionarioRequestDTO;
 import com.example.funcionarios_service.dto.FuncionarioResponseDTO;
+import com.example.funcionarios_service.dto.SalariosPorSetorDTO;
 import com.example.funcionarios_service.service.FuncionarioService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -45,12 +46,6 @@ public class FuncionarioController {
         return ResponseEntity.ok(response);
     }
 
-//    @GetMapping
-//    public ResponseEntity<List<FuncionarioResponseDTO>> listarFuncionarios(@RequestParam(required = false) Boolean ativo) {
-//        String usuarioEmail = getUsuarioEmail();
-//        List<FuncionarioResponseDTO> lista = funcionarioService.listarPorUsuarioComFiltroAtivo(usuarioEmail, ativo);
-//        return ResponseEntity.ok(lista);
-//    }
 
     @PatchMapping("/{funcionarioId}")
     public ResponseEntity<FuncionarioResponseDTO> editarFuncionario(
@@ -131,5 +126,14 @@ public class FuncionarioController {
     private String getUsuarioEmail() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         return authentication.getName();
+    }
+
+    @GetMapping("/total-salarios-por-setor")
+    public ResponseEntity<List<SalariosPorSetorDTO>> getTotalSalariosPorSetor() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+
+        List<SalariosPorSetorDTO> totaisPorSetor = funcionarioService.calcularTotalSalariosPorSetor(usuarioEmail);
+        return ResponseEntity.ok(totaisPorSetor);
     }
 }

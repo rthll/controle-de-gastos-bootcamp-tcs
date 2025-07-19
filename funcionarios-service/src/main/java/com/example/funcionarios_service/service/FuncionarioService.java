@@ -3,6 +3,7 @@ package com.example.funcionarios_service.service;
 import com.example.funcionarios_service.client.SetorClient;
 import com.example.funcionarios_service.dto.FuncionarioRequestDTO;
 import com.example.funcionarios_service.dto.FuncionarioResponseDTO;
+import com.example.funcionarios_service.dto.SalariosPorSetorDTO;
 import com.example.funcionarios_service.dto.SetorDTO;
 import com.example.funcionarios_service.entity.Funcionario;
 import com.example.funcionarios_service.exception.FuncionarioNotFoundException;
@@ -131,6 +132,43 @@ public class FuncionarioService {
             throw new RuntimeException("Você não tem permissão para excluir um ou mais funcionarios");
         }
         funcionarioRepository.deleteAll(funcionarios);
+    }
+
+    public List<SalariosPorSetorDTO> calcularTotalSalariosPorSetor(String usuarioEmail) {
+        List<Funcionario> funcionarios = funcionarioRepository.findByUsuarioId(usuarioEmail);
+
+        Map<Long, BigDecimal> salariosPorSetor = funcionarios.stream()
+                .filter(Funcionario::isAtivo)
+                .collect(Collectors.groupingBy(
+                        Funcionario::getSetorId,
+                        Collectors.reducing(
+                                BigDecimal.ZERO,
+                                Funcionario::getSalario,
+                                BigDecimal::add
+                        )
+                ));
+
+        String token = tokenService.getCurrentToken();
+        List<SalariosPorSetorDTO> resultado = new ArrayList<>();
+
+        for (Map.Entry<Long, BigDecimal> entry : salariosPorSetor.entrySet()) {
+            Long setorId = entry.getKey();
+            BigDecimal totalSalarios = entry.getValue();
+
+            SetorDTO setorDTO = setorClient.buscarSetorPorId(setorId, token);
+
+            SalariosPorSetorDTO salarioSetor = SalariosPorSetorDTO.builder()
+                    .setorId(setorId)
+                    .setorNome(setorDTO != null ? setorDTO.getNome() : "Setor não encontrado")
+                    .totalSalarios(totalSalarios)
+                    .build();
+
+            resultado.add(salarioSetor);
+        }
+
+        resultado.sort(Comparator.comparing(SalariosPorSetorDTO::getSetorNome));
+
+        return resultado;
     }
 
     private FuncionarioResponseDTO mapToResponseDTO(Funcionario funcionario) {

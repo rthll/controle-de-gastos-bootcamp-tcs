@@ -2,6 +2,7 @@ package com.example.gastos_service.controller;
 
 import com.example.gastos_service.dto.GastoRequestDTO;
 import com.example.gastos_service.dto.GastoResponseDTO;
+import com.example.gastos_service.dto.TotalPorMesDTO;
 import com.example.gastos_service.service.GastoService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -13,6 +14,7 @@ import java.time.YearMonth;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/gastos")
@@ -149,6 +151,16 @@ public class GastoController {
         Map<YearMonth, BigDecimal> totalPorMes = gastoService.calcularTotalGastosPorMes(usuarioEmail);
         return ResponseEntity.ok(totalPorMes);
     }
+
+    @GetMapping("/total-por-mes-por-gasto")
+    public ResponseEntity<List<TotalPorMesDTO>> getTotalPorMesPorGasto() {
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+
+        List<TotalPorMesDTO> totais = gastoService.calcularTotalGastosPorMesDTO(usuarioEmail);
+        return ResponseEntity.ok(totais);
+    }
+
 
     @GetMapping("/existe-categoria/{categoriaId}")
     public ResponseEntity<Boolean> existeGastoComCategoria(@PathVariable Long categoriaId) {

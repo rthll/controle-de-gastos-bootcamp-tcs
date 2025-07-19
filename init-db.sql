@@ -109,3 +109,25 @@ WHERE email = p_email;
 RETURN user_role;
 END;
 $$ LANGUAGE plpgsql;
+
+DO $$ BEGIN
+CREATE TYPE employee_role AS ENUM ('PESSOAL', 'EMPRESARIAL');
+EXCEPTION
+    WHEN duplicate_object THEN null;
+END $$;
+
+CREATE OR REPLACE FUNCTION sp_find_user_by_email(p_email VARCHAR)
+RETURNS TABLE(
+    id BIGINT,
+    name VARCHAR,
+    email VARCHAR,
+    password VARCHAR,
+    role VARCHAR
+) AS $$
+BEGIN
+RETURN QUERY
+SELECT u.id, u.name, u.email, u.password, u.role::VARCHAR
+FROM users u
+WHERE u.email = p_email;
+END;
+$$ LANGUAGE plpgsql;
