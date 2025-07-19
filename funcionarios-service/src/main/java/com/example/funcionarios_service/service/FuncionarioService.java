@@ -23,6 +23,17 @@ public class FuncionarioService {
     private final SetorClient setorClient;
 
     public FuncionarioResponseDTO criarFuncionario(String usuarioEmail, FuncionarioRequestDTO dto) {
+        String token = tokenService.getCurrentToken();
+        try {
+            if (!setorClient.setorExiste(dto.getSetorId(), token)) {
+                throw new SetorNotFoundException("Categoria não encontrada");
+            }
+
+        } catch (RuntimeException e) {
+            throw new SetorNotFoundException("Não é possível criar o gasto no momento. Serviço de categorias indisponível.");
+
+        }
+
         Funcionario funcionario = Funcionario.builder()
                 .nome(dto.getNome())
                 .cargo(dto.getCargo())
