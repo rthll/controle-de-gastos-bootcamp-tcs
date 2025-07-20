@@ -254,38 +254,42 @@ public class GastoService {
         return totalPorMes;
     }
 
-    public List<TotalPorMesDTO> calcularTotalGastosPorMesDTO(String usuarioEmail) {
+    public List<MesComGastosDTO> calcularTotalGastosPorMesAgrupado(String usuarioEmail) {
         List<Gasto> gastos = gastoRepository.findByUsuarioId(usuarioEmail);
-        Map<YearMonth, BigDecimal> totalPorMes = new TreeMap<>();
-        YearMonth mesAtual = YearMonth.now();
+        Map<YearMonth, List<GastoMesDTO>> mapa = new TreeMap<>(Comparator.reverseOrder());
 
-        gastos.stream()
-                .filter(Gasto::isAtivo)
-                .forEach(gasto -> {
-                    if (gasto.isParcelado() && gasto.getParcelas() != null && !gasto.getParcelas().isEmpty()) {
-                        gasto.getParcelas().stream()
-                                .filter(parcela -> !YearMonth.from(parcela.getDataVencimento()).isBefore(mesAtual))
-                                .forEach(parcela -> {
-                                    YearMonth mesVencimento = YearMonth.from(parcela.getDataVencimento());
-                                    totalPorMes.merge(mesVencimento, parcela.getValorParcela(), BigDecimal::add);
-                                });
-                    } else {
-                        YearMonth mesGasto = YearMonth.from(gasto.getData());
-                        if (!mesGasto.isBefore(mesAtual)) {
-                            totalPorMes.merge(mesGasto, gasto.getValorTotal(), BigDecimal::add);
-                        }
-                    }
-                });
+        for (Gasto gasto : gastos) {
+            if (!gasto.isAtivo()) continue;
 
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM/yyyy").withLocale(new Locale("pt", "BR"));
+            CategoriaDTO categoria = categoriaClient.buscarCategoriaPorId(gasto.getCategoriaId(), tokenService.getCurrentToken());
 
-        return totalPorMes.entrySet().stream()
-                .map(entry -> new TotalPorMesDTO(
-                        entry.getKey().format(formatter), // Ex: "Julho/2025"
-                        entry.getValue()
-                ))
-                .collect(Collectors.toList());
+            // Gasto sem parcelas
+            if (gasto.getParcelas() == null || gasto.getParcelas().isEmpty()) {
+                YearMonth mes = YearMonth.from(gasto.getData());
+                mapa.computeIfAbsent(mes, k -> new ArrayList<>())
+                        .add(new GastoMesDTO(gasto.getDescricao(), gasto.getValorTotal(), categoria.getNome()));
+            } else {
+                // Gasto com parcelas
+                for (Parcela parcela : gasto.getParcelas()) {
+                    YearMonth mes = YearMonth.from(parcela.getDataVencimento());
+                    mapa.computeIfAbsent(mes, k -> new ArrayList<>())
+                            .add(new GastoMesDTO(gasto.getDescricao(), parcela.getValorParcela(), categoria.getNome()));
+                }
+            }
+        }
+
+        // Monta a lista final
+        List<MesComGastosDTO> resultado = new ArrayList<>();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MMMM/yyyy", new Locale("pt", "BR"));
+
+        for (Map.Entry<YearMonth, List<GastoMesDTO>> entry : mapa.entrySet()) {
+            String mesFormatado = entry.getKey().format(formatter);
+            resultado.add(new MesComGastosDTO(mesFormatado, entry.getValue()));
+        }
+
+        return resultado;
     }
+
 
 
     private GastoResponseDTO mapToResponseDTO(Gasto gasto) {
