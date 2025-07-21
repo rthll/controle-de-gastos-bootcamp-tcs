@@ -136,4 +136,19 @@ public class FuncionarioController {
         List<SalariosPorSetorDTO> totaisPorSetor = funcionarioService.calcularTotalSalariosPorSetor(usuarioEmail);
         return ResponseEntity.ok(totaisPorSetor);
     }
+
+    @PostMapping("/buscar-por-ids")
+    public ResponseEntity<List<FuncionarioResponseDTO>> buscarFuncionariosPorIds(
+            @RequestBody List<Long> funcionarioIds) {
+
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        String usuarioEmail = authentication.getName();
+
+        System.out.println("IDs: " + funcionarioIds);
+        System.out.println("Usuário: " + usuarioEmail);
+
+        List<FuncionarioResponseDTO> gastos = funcionarioService.buscarFuncionariosPorIds(funcionarioIds, usuarioEmail);
+
+        return ResponseEntity.ok(gastos);
+    }
 }

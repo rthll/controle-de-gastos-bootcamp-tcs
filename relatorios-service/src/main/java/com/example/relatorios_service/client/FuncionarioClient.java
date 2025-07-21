@@ -1,5 +1,6 @@
 package com.example.relatorios_service.client;
 
+import com.example.relatorios_service.dto.FuncionarioRelatorioDTO;
 import com.example.relatorios_service.dto.GastoRelatorioDTO;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -13,35 +14,34 @@ import java.util.List;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class GastoClient {
+public class FuncionarioClient {
 
     private final RestTemplate restTemplate;
 
-    @Value("${services.gastos.url}")
-    private String gastoServiceUrl;
+    @Value("${services.funcionarios.url}")
+    private String funcionarioServiceUrl;
 
-    public List<GastoRelatorioDTO> buscarGastosPorIds(List<Long> gastoIds, String token) {
+    public List<FuncionarioRelatorioDTO> buscarFuncionariosPorId(List<Long> funcionarioIds, String token) {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setBearerAuth(token);
-            HttpEntity<List<Long>> entity = new HttpEntity<>(gastoIds, headers);
+            HttpEntity<List<Long>> entity = new HttpEntity<>(funcionarioIds, headers);
 
-            String url = gastoServiceUrl + "/gastos/buscar-por-ids";
+            String url = funcionarioServiceUrl + "/funcionarios/buscar-por-ids";
 
-            ResponseEntity<List<GastoRelatorioDTO>> response = restTemplate.exchange(
+            ResponseEntity<List<FuncionarioRelatorioDTO>> response = restTemplate.exchange(
                     url,
                     HttpMethod.POST,
                     entity,
-                    new ParameterizedTypeReference<List<GastoRelatorioDTO>>() {}
+                    new ParameterizedTypeReference<List<FuncionarioRelatorioDTO>>() {}
             );
 
             System.out.println(response.getBody());
 
             return response.getBody();
         } catch (Exception e) {
-            log.error("Erro ao buscar gastos", e);
+            log.error("Erro ao buscar funcionarios", e);
             return null;
         }
     }
-
 }

@@ -1,5 +1,6 @@
 package com.example.relatorios_service.service;
 
+import com.example.relatorios_service.dto.FuncionarioRelatorioDTO;
 import com.example.relatorios_service.dto.GastoRelatorioDTO;
 import com.itextpdf.io.font.constants.StandardFonts;
 import com.itextpdf.kernel.colors.ColorConstants;
@@ -58,6 +59,28 @@ public class PdfService {
         }
     }
 
+    public byte[] gerarRelatorioPdfFuncionario(List<FuncionarioRelatorioDTO> funcionarios) throws IOException {
+        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+        PdfWriter writer = new PdfWriter(baos);
+        PdfDocument pdfDoc = new PdfDocument(writer);
+        Document document = new Document(pdfDoc);
+
+        try {
+            adicionarCabecalho(document);
+            adicionarListaDetalhadaFuncionario(document, funcionarios);
+            adicionarResumoGeralFuncionario(document, funcionarios);
+            adicionarResumoPorSetor(document, funcionarios);
+            adicionarRodape(document);
+
+            document.close();
+            return baos.toByteArray();
+
+        } catch (Exception e) {
+            log.error("Erro ao gerar PDF: ", e);
+            throw new RuntimeException("Erro ao gerar relatório PDF", e);
+        }
+    }
+
     private void adicionarCabecalho(Document document) throws IOException {
         Paragraph dataRelatorio = new Paragraph("Gerado em: " + LocalDate.now().format(DATE_FORMATTER))
                 .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
@@ -78,7 +101,7 @@ public class PdfService {
                 .setFontColor(ColorConstants.WHITE)
                 .setMarginTop(20);
 
-        Paragraph subtitulo = new Paragraph("Relatório de Gastos")
+        Paragraph subtitulo = new Paragraph("Relatório de Funcionários")
                 .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
                 .setFontSize(16)
                 .setTextAlignment(TextAlignment.CENTER)
@@ -152,6 +175,61 @@ public class PdfService {
         document.add(table);
     }
 
+    private void adicionarListaDetalhadaFuncionario(Document document, List<FuncionarioRelatorioDTO> funcionarios) throws IOException {
+        Paragraph tituloSecao = new Paragraph("Lista Detalhada de Funcionarios")
+                .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
+                .setFontSize(18)
+                .setFontColor(PRIMARY_BLUE)
+                .setMarginBottom(15);
+
+        document.add(tituloSecao);
+
+        // Tabela de gastos
+        Table table = new Table(new float[]{3, 2, 1, 2, 2, 2});
+        table.setWidth(UnitValue.createPercentValue(100));
+        table.setMarginBottom(30);
+
+        // Cabeçalhos
+        String[] headers = {"Nome", "Telefone", "Cargo", "Salario", "Data de cadastro", "Setor"};
+        for (String header : headers) {
+            Cell headerCell = new Cell()
+                    .add(new Paragraph(header)
+                            .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
+                            .setFontColor(ColorConstants.WHITE)
+                            .setFontSize(11))
+                    .setBackgroundColor(PRIMARY_BLUE)
+                    .setBorder(null)
+                    .setPadding(10);
+            table.addHeaderCell(headerCell);
+        }
+
+        boolean isOdd = true;
+        for (FuncionarioRelatorioDTO funcionario : funcionarios) {
+            DeviceRgb bgColor = isOdd ? (DeviceRgb) ColorConstants.WHITE : LIGHT_GRAY;
+            System.out.printf(String.valueOf(funcionario.getSalario()));
+
+            table.addCell(createDataCell(funcionario.getNome(), bgColor));
+
+            table.addCell(createDataCell(funcionario.getTelefone(), bgColor));
+
+            String cargoNome = funcionario.getCargo();
+            table.addCell(createDataCell(cargoNome, bgColor));
+
+            String valor = String.format("R$ %.2f", funcionario.getSalario());
+            table.addCell(createDataCell(valor, bgColor));
+
+            String data = funcionario.getDataCadastro().toLocalDate().format(DATE_FORMATTER);
+            table.addCell(createDataCell(data, bgColor));
+
+            String setorNome = funcionario.getSetor().getNome();
+            table.addCell(createDataCell(setorNome, bgColor));
+
+            isOdd = !isOdd;
+        }
+
+        document.add(table);
+    }
+
     private Cell createDataCell(String content, DeviceRgb bgColor) {
         try {
             return new Cell()
@@ -185,6 +263,34 @@ public class PdfService {
         Cell quantidadeCard = createSummaryCard("Quantidade",
                 String.valueOf(gastos.size()), PRIMARY_BLUE);
         Cell mediaCard = createSummaryCard("Média por Gasto",
+                String.format("R$ %.2f", mediaGastos), PRIMARY_BLUE);
+
+        resumoTable.addCell(quantidadeCard);
+        resumoTable.addCell(totalCard);
+        resumoTable.addCell(mediaCard);
+
+        document.add(resumoTable);
+    }
+
+    private void adicionarResumoGeralFuncionario(Document document, List<FuncionarioRelatorioDTO> funcionarios) throws IOException {
+        BigDecimal totalGastos = funcionarios.stream()
+                .map(FuncionarioRelatorioDTO::getSalario)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        BigDecimal mediaGastos = funcionarios.isEmpty() ? BigDecimal.ZERO :
+                totalGastos.divide(BigDecimal.valueOf(funcionarios.size()), 2, BigDecimal.ROUND_HALF_UP);
+
+        // Container do resumo
+        Table resumoTable = new Table(UnitValue.createPercentArray(new float[]{1, 1, 1}));
+        resumoTable.setWidth(UnitValue.createPercentValue(100));
+        resumoTable.setMarginBottom(30);
+
+        // Cards de resumo
+        Cell totalCard = createSummaryCard("Total de gastos com salários",
+                String.format("R$ %.2f", totalGastos), SECONDARY_BLUE);
+        Cell quantidadeCard = createSummaryCard("Quantidade de funcionários",
+                String.valueOf(funcionarios.size()), PRIMARY_BLUE);
+        Cell mediaCard = createSummaryCard("Média por funcionário",
                 String.format("R$ %.2f", mediaGastos), PRIMARY_BLUE);
 
         resumoTable.addCell(quantidadeCard);
@@ -280,6 +386,60 @@ public class PdfService {
         document.add(new LineSeparator(new SolidLine(1f))
                 .setMarginTop(30)
                 .setMarginBottom(10));
+    }
+
+    private void adicionarResumoPorSetor(Document document, List<FuncionarioRelatorioDTO> funcionarios) throws IOException {
+        Paragraph tituloSecaoCategoria = new Paragraph("Resumo por Setor")
+                .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
+                .setFontSize(18)
+                .setFontColor(PRIMARY_BLUE)
+                .setMarginBottom(15);
+
+        document.add(tituloSecaoCategoria);
+
+        Map<String, BigDecimal> gastosPorSetor = funcionarios.stream()
+                .collect(Collectors.groupingBy(
+                        funcionario -> funcionario.getSetor() != null ?
+                                funcionario.getSetor().getNome() : "Sem setor",
+                        Collectors.mapping(
+                                FuncionarioRelatorioDTO::getSalario,
+                                Collectors.reducing(BigDecimal.ZERO, BigDecimal::add)
+                        )
+                ));
+
+        BigDecimal totalGeralSetor = gastosPorSetor.values().stream()
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
+
+        // Tabela de categorias
+        Table tableCategorias = new Table(new float[]{3, 2, 2});
+        tableCategorias.setWidth(UnitValue.createPercentValue(100));
+
+        // Cabeçalhos
+        tableCategorias.addHeaderCell(createHeaderCell("Setor"));
+        tableCategorias.addHeaderCell(createHeaderCell("Total"));
+        tableCategorias.addHeaderCell(createHeaderCell("Percentual"));
+
+        // Dados ordenados por valor
+        gastosPorSetor.entrySet().stream()
+                .sorted(Map.Entry.<String, BigDecimal>comparingByValue().reversed())
+                .forEach(entry -> {
+                    String categoria = entry.getKey();
+                    BigDecimal valor = entry.getValue();
+                    BigDecimal percentual = totalGeralSetor.compareTo(BigDecimal.ZERO) > 0 ?
+                            valor.multiply(BigDecimal.valueOf(100))
+                                    .divide(totalGeralSetor, 2, BigDecimal.ROUND_HALF_UP) :
+                            BigDecimal.ZERO;
+
+                    try {
+                        tableCategorias.addCell(createDataCell(categoria, (DeviceRgb) ColorConstants.WHITE));
+                        tableCategorias.addCell(createDataCell(String.format("R$ %.2f", valor), (DeviceRgb) ColorConstants.WHITE));
+                        tableCategorias.addCell(createDataCell(String.format("%.1f%%", percentual), (DeviceRgb) ColorConstants.WHITE));
+                    } catch (Exception e) {
+                        log.error("Erro ao adicionar linha do setor", e);
+                    }
+                });
+
+        document.add(tableCategorias);
     }
 
     private void adicionarResumoPorFonte(Document document, List<GastoRelatorioDTO> gastos) throws IOException {

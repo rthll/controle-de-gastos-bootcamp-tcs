@@ -182,6 +182,29 @@ public class FuncionarioService {
         return resultado;
     }
 
+    public List<FuncionarioResponseDTO> buscarFuncionariosPorIds(List<Long> funcionarioIds, String usuarioEmail) {
+        if (funcionarioIds == null || funcionarioIds.isEmpty()) {
+            throw new IllegalArgumentException("Lista de funcionários vazia.");
+        }
+
+        List<Funcionario> funcionarios = funcionarioRepository.findAllById(funcionarioIds);
+
+        if (funcionarios.isEmpty()) {
+            throw new IllegalArgumentException("Nenhum funcionário encontrado.");
+        }
+
+        List<Funcionario> listarApenasUsuario = funcionarios.stream()
+                .filter(gasto -> gasto.getUsuarioId().equals(usuarioEmail))
+                .collect(Collectors.toList());
+        if (listarApenasUsuario.isEmpty()) {
+            throw new IllegalArgumentException("Nenhum funcionario para o usuário encontrado.");
+        }
+
+        return listarApenasUsuario.stream()
+                .map(this::mapToResponseDTO)
+                .collect(Collectors.toList());
+    }
+
     private FuncionarioResponseDTO mapToResponseDTO(Funcionario funcionario) {
       String token = tokenService.getCurrentToken();
       SetorDTO setorDTO = setorClient.buscarSetorPorId(funcionario.getSetorId(), token);
