@@ -6,5 +6,6 @@ import java.util.List;
 
 public interface PendenteRepository extends JpaRepository<Pendente, Long> {
     List<Pendente> findByUsuarioDoisId(String usuarioDoisId);
+    List<Pendente> findByIdGasto(Long idGasto);
     boolean existsByIdGasto(Long idGasto);
 }

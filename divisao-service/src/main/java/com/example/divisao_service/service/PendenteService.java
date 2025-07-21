@@ -131,7 +131,12 @@ public class PendenteService {
         pendenteRepository.deleteById(id);
     }
 
-    public List<GastosDivididos> listaUsuariosDivididos(Long idGasto){
-       return gastosDivididosRepository.findByIdGasto(idGasto);
+    public ListDivididosResponseDTO listaUsuariosDivididos(Long idGasto){
+        List<Pendente> pendentes = pendenteRepository.findByIdGasto(idGasto);
+        List<GastosDivididos> aceitos = gastosDivididosRepository.findByIdGasto(idGasto);
+        return ListDivididosResponseDTO.builder()
+                .pendentes(pendentes)
+                .aceitos(aceitos)
+                .build();
     }
 }

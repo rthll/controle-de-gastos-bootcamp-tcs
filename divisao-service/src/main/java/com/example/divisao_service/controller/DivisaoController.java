@@ -1,6 +1,7 @@
 package com.example.divisao_service.controller;
 
 import com.example.divisao_service.dto.DivisaoResponseDTO;
+import com.example.divisao_service.dto.ListDivididosResponseDTO;
 import com.example.divisao_service.dto.PendenteRequestDTO;
 import com.example.divisao_service.dto.PendenteResponseDTO;
 import com.example.divisao_service.entity.GastosDivididos;
@@ -54,8 +55,9 @@ public class DivisaoController {
     }
 
     @GetMapping("/listar/{idgasto}")
-    public List<GastosDivididos> listarDivididos(@PathVariable Long idgasto){
-        return pendenteService.listaUsuariosDivididos(idgasto);
+    public ResponseEntity<ListDivididosResponseDTO> listarDivididos(@PathVariable Long idgasto){
+        ListDivididosResponseDTO divididos = pendenteService.listaUsuariosDivididos(idgasto);
+        return ResponseEntity.ok(divididos);
     }
 
 }
