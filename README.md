@@ -1,17 +1,20 @@
 # AntBalance - Controle de Gastos Pessoais
 
-O objetivo do projeto é oferecer um sistema de controle de gastos e investimentos pessoais com funcionalidades :
+O objetivo do projeto é oferecer um sistema de controle de gastos pessoais e empresariais, que permite o gerenciamento financeiro individual ou corporativo, com suporte a divisão de despesas por categoria, setor e funcionário.
+Suas principais funcionalidades são: 
 
+- Controle financeiro pessoal e empresarial.
 - Cadastro e autenticação de usuários com JWT.
 - Registro de despesas por data, valor e categoria.
 - Visualização de gastos mensais e totais.
-- Cálculo de rentabilidade de investimentos.
-- Relatórios e listagem de despesas e rendas.
-- API REST desenvolvida com Spring Boot.
-- Banco de dados H2 em memória.
+- Controle de funcionários e divisão por setores.
+- Geração de relatórios financeiros e exportação.
+- API REST desenvolvida com Spring Boot  com arquitetura de microserviços
+- Banco de dados PostgreSQL.
+- Contêineres Docker para execução unificada e simplificada.
   
 ## 👤 Autores
-- Repositório GitHub: https://github.com/rthll/controle-de-gastos-bootcamp-tcs
+- Repositório GitHub: https://github.com/rthll/controle-de-gastos-bootcamp-tcs (Backend) e https://github.com/jotasoftware/Frontend-AntBalance.git (Frontend)
 - Desenvolvedores do Projeto: Caio Alves Galassi, João Pedro Moreira, Arion Teixeira, Vinícius Augusto da Costa, Rythielly Francisco Garcia Bezerra. 
 
 
@@ -22,12 +25,15 @@ O objetivo do projeto é oferecer um sistema de controle de gastos e investiment
 - Spring Boot - Framework para criação de APIs REST
 - Spring Security (JWT) - Autenticação e segurança com tokens
 - Maven - Gerenciador de dependências e build
+- Docker – Contêinerização dos serviços.
   
 ### Frontend
 - React - Biblioteca JavaScript para construção da interface do usuário
+- Vite.js
+- Axios
 
 ### Bando de Dados
-- H2 Database - Banco de dados em memória para testes locais
+- PostgreSQL – Banco de dados relacional utilizado na produção.
 - JPA + Hibernate
 
 ## 🔧 Como Executar o Software
@@ -36,6 +42,8 @@ O objetivo do projeto é oferecer um sistema de controle de gastos e investiment
 - Java 21 instalado
 - Node.js + npm (para rodar o frontend)
 - Maven instalado
+- PostgreSQL (caso deseje executar fora do Docker)
+- Docker + Docker Compose
 
 ### Backend: 
 🔗 Repositório: [rthll/controle-de-gastos-bootcamp-tcs](https://github.com/rthll/controle-de-gastos-bootcamp-tcs)
@@ -49,6 +57,9 @@ cd controle-de-gastos-bootcamp-tcs/backend
 
 # Execute com Maven
 ./mvnw spring-boot:run
+
+# Suba os serviços com Docker Compose
+docker-compose up --build
 
 Acesse a API em:
 http://localhost:8080
@@ -76,19 +87,25 @@ http://localhost:5173
 - Cadastro e autenticação de usuários com JWT.
 - Recuperação de senha via e-mail.
 - Cadastro e gerenciamento de categorias.
-- Registro e edição de gastos e investimentos.
-- Geração de relatórios financeiros.
+- Registro e edição de gastos.
+- Geração e exportação de relatórios financeiros.
 - Divisão de gastos entre os usuários.
+- Cadastro e edição dos funcionários.
+- Organização por setores empresariais.
+- Controle de gastos corporativos por setor.
+
 
 ## 🛠 Estrutura dos microserviços
 
-- `api-gateway`: Roteia e autentica requisições
-- `login-auth-api`: Autenticação e segurança
-- `recuperar-senha-service`: Recuperação de senha por e-mail
-- `gastos-services`: Registro e consulta de gastos
-- `investimentos-service`: Controle de investimentos
-- `categorias-services`: CRUD de categorias
-- `relatorio-services`: Exportação de relatórios filtrados (pdf ou excel)
+- `api-gateway`: Roteia e autentica requisições.
+- `login-auth-api`: Autenticação e segurança.
+- `recuperar-senha-service`: Recuperação de senha por e-mail.
+- `gastos-services`: Registro e consulta de gastos.
+- `categorias-services`: CRUD de categorias.
+- `relatorios-service`: Exportação de relatórios filtrados (pdf ou excel).
+- `funcionarios-service`: Cadastro e gerenciamento de funcionários.
+- `setor-service`: Organização e controle dos setores da empresa.
+
 
 ## 🔐 Segurança
 
@@ -98,9 +115,12 @@ http://localhost:5173
 
 
 ## 📊 Diagrama de Arquitetura do Software
-Abaixo está o diagrama representando os microserviços, API Gateway, persistência de dados e serviços externos usados no projeto:
-
+Abaixo estão os diagramas que ilustram a arquitetura da aplicação AntBalance, separando a visão do frontend e do backend, com foco na comunicação entre os componentes e nos fluxos principais da aplicação:
+### Diagrama do Backend:
 ![Diagrama da Arquitetura](diagrama%20arquitetura%20software.png)
+
+### Diagrama do Frontend:
+
 
 ## 📄 Licença
 
