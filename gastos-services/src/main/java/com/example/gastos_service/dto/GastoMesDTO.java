@@ -12,5 +12,7 @@ public class GastoMesDTO {
     private String descricao;
     private BigDecimal valor;
     private String categoria;
+    private String fonte;
+    private BigDecimal limiteDeGasto;
 }
 
