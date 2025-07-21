@@ -267,13 +267,13 @@ public class GastoService {
             if (gasto.getParcelas() == null || gasto.getParcelas().isEmpty()) {
                 YearMonth mes = YearMonth.from(gasto.getData());
                 mapa.computeIfAbsent(mes, k -> new ArrayList<>())
-                        .add(new GastoMesDTO(gasto.getDescricao(), gasto.getValorTotal(), categoria.getNome()));
+                        .add(new GastoMesDTO(gasto.getDescricao(), gasto.getValorTotal(), categoria.getNome(), gasto.getFonte(), categoria.getLimiteDeGasto()));
             } else {
                 // Gasto com parcelas
                 for (Parcela parcela : gasto.getParcelas()) {
                     YearMonth mes = YearMonth.from(parcela.getDataVencimento());
                     mapa.computeIfAbsent(mes, k -> new ArrayList<>())
-                            .add(new GastoMesDTO(gasto.getDescricao(), parcela.getValorParcela(), categoria.getNome()));
+                            .add(new GastoMesDTO(gasto.getDescricao(), parcela.getValorParcela(), categoria.getNome(), gasto.getFonte(), categoria.getLimiteDeGasto()));
                 }
             }
         }
