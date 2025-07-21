@@ -27,6 +27,5 @@ public class GastoResponseDTO {
     private String fonte;
     private Long categoriaId;
     private CategoriaDTO categoria;
-
     private List<ParcelaDTO> parcelas;
 }
