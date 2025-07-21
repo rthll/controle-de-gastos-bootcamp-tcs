@@ -66,7 +66,7 @@ public class PdfService {
         Document document = new Document(pdfDoc);
 
         try {
-            adicionarCabecalho(document);
+            adicionarCabecalhoFuncionario(document);
             adicionarListaDetalhadaFuncionario(document, funcionarios);
             adicionarResumoGeralFuncionario(document, funcionarios);
             adicionarResumoPorSetor(document, funcionarios);
@@ -93,6 +93,44 @@ public class PdfService {
                 headerTable.setWidth(UnitValue.createPercentValue(100));
                 headerTable.setBackgroundColor(PRIMARY_BLUE);
                 headerTable.setMarginBottom(20);
+
+        Paragraph titulo = new Paragraph("AntBalance")
+                .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
+                .setFontSize(28)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontColor(ColorConstants.WHITE)
+                .setMarginTop(20);
+
+        Paragraph subtitulo = new Paragraph("Relatório de Gastos")
+                .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+                .setFontSize(16)
+                .setTextAlignment(TextAlignment.CENTER)
+                .setFontColor(ColorConstants.WHITE)
+                .setMarginBottom(20);
+
+        Cell headerCell = new Cell()
+                .add(titulo)
+                .add(subtitulo)
+                .setBorder(null);
+
+        document.add(dataRelatorio);
+        headerTable.addCell(headerCell);
+        document.add(headerTable);
+
+    }
+
+    private void adicionarCabecalhoFuncionario(Document document) throws IOException {
+        Paragraph dataRelatorio = new Paragraph("Gerado em: " + LocalDate.now().format(DATE_FORMATTER))
+                .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA))
+                .setFontSize(10)
+                .setTextAlignment(TextAlignment.RIGHT)
+                .setFontColor(GRAY_COLOR)
+                .setMarginBottom(10);
+
+        Table headerTable = new Table(UnitValue.createPercentArray(new float[]{1}));
+        headerTable.setWidth(UnitValue.createPercentValue(100));
+        headerTable.setBackgroundColor(PRIMARY_BLUE);
+        headerTable.setMarginBottom(20);
 
         Paragraph titulo = new Paragraph("AntBalance")
                 .setFont(PdfFontFactory.createFont(StandardFonts.HELVETICA_BOLD))
